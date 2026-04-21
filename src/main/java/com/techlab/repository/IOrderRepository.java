@@ -24,5 +24,9 @@ public interface IOrderRepository extends JpaRepository<Order, Long> {
     @EntityGraph(attributePaths = "lines.product")
     @Query("SELECT o FROM Order o")
     Optional<List<Order>> findOrdersWithLines();
+
+    @EntityGraph(attributePaths = "lines.product")
+    @Query("SELECT o FROM Order o WHERE o.customer.id = :userId")
+    List<Order> findByCustomerId(@Param("userId") Long userId);
 }
 

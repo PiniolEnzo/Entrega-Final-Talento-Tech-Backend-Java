@@ -2,7 +2,6 @@ package com.techlab.configuration;
 
 import com.techlab.entity.Role;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.util.http.parser.HttpParser;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -30,17 +29,35 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authRequest ->
                         authRequest
+                                // ============ AUTH PÚBLICO ============
                                 .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
-                                .requestMatchers("/orders/**").hasRole(Role.ADMIN.name())
+                                .requestMatchers(HttpMethod.POST, "/users").permitAll()
+
+                                // ============ PRODUCTS - Lectura pública, escritura admin ============
                                 .requestMatchers(HttpMethod.GET, "/products/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/products/**").hasRole(Role.ADMIN.name())
                                 .requestMatchers(HttpMethod.PUT, "/products/**").hasRole(Role.ADMIN.name())
                                 .requestMatchers(HttpMethod.DELETE, "/products/**").hasRole(Role.ADMIN.name())
-                                .requestMatchers(HttpMethod.POST, "/users").permitAll()
+
+                                // ============ ORDERS - USER ve los propios, ADMIN ve todos ============
+                                .requestMatchers(HttpMethod.GET, "/orders/mis-pedidos").hasRole(Role.USER.name())
+                                .requestMatchers(HttpMethod.GET, "/orders").hasRole(Role.ADMIN.name())
+                                .requestMatchers(HttpMethod.GET, "/orders/**").hasRole(Role.ADMIN.name())
+
+                                // ============ CARTS - Requiere autenticación ============
+                                .requestMatchers("/carts/**").hasRole(Role.USER.name())
+
+                                // ============ USERS - USER solo propio, ADMIN todos ============
+                                .requestMatchers(HttpMethod.GET, "/users").hasRole(Role.ADMIN.name())
+                                .requestMatchers(HttpMethod.DELETE, "/users/**").hasRole(Role.ADMIN.name())
+
+                                // ============ SWAGGER ============
                                 .requestMatchers("/swagger-ui/**").permitAll()
                                 .requestMatchers("/swagger-ui.html").permitAll()
                                 .requestMatchers("/v3/api-docs/**").permitAll()
+
+                                // ============ FALLBACK ============
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManagement ->

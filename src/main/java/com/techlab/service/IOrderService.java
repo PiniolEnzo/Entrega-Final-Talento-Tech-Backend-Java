@@ -9,4 +9,5 @@ public interface IOrderService {
 
     OrderResponse getOrder(Long orderId);
 
+    List<OrderResponse> getCurrentUserOrders();
 }

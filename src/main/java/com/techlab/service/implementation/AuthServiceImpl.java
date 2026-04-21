@@ -4,6 +4,7 @@ import com.techlab.dto.auth.AuthResponse;
 import com.techlab.dto.auth.LoginRequest;
 import com.techlab.dto.user.RegisterRequest;
 import com.techlab.dto.user.UserDto;
+import com.techlab.entity.Role;
 import com.techlab.entity.User;
 import com.techlab.exception.DuplicateUserException;
 import com.techlab.exception.UserNotFoundException;
@@ -48,7 +49,8 @@ public class AuthServiceImpl implements IAuthService {
         }
         User  user = UserMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-
+        user.setActive(true);
+        user.setUserRole(Role.USER);
         userRepository.save(user);
 
         return UserMapper.toUserDto(user);
@@ -56,9 +58,17 @@ public class AuthServiceImpl implements IAuthService {
 
     public User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication==null || authentication.getPrincipal()==null){
+            return null;
+        }
+
         Long userId = (Long) authentication.getPrincipal();
 
-        return userRepository.findById(userId).orElse(null);
+        try{
+            return userRepository.findById(userId).orElse(null);
+        } catch (ClassCastException e){
+            return null;
+        }
     }
 
 }

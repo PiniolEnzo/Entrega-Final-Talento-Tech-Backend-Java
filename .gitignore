@@ -31,3 +31,10 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### environment variables ###
+.env
+
+# API documentation and Postman collection
+API_TESTING_GUIDE.md
+TalentoTech_API_Postman_Collection.json

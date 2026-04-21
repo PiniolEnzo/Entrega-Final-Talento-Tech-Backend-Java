@@ -9,8 +9,6 @@ public interface IShoppingCartService {
 
     CartResponse getCart(Long cartId);
 
-    ShoppingCart getShoppingCart(Long cartId);
-
     CartResponse createCart();
 
     CartItemResponse addToCart(Long cartId, Long productId);
@@ -20,5 +18,7 @@ public interface IShoppingCartService {
     void removeItem(Long cartId, Long productId);
 
     void clearCart(Long cartId);
+
+
 
 }
