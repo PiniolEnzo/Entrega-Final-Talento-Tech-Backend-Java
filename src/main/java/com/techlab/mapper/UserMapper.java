@@ -15,6 +15,7 @@ public class UserMapper {
         UserResponse response = new UserResponse();
         response.setId(user.getId());
         response.setName(user.getName());
+        response.setEmail(user.getEmail());
         return response;
     }
 
@@ -29,6 +30,7 @@ public class UserMapper {
         UserDto dto = new UserDto();
         dto.setId(user.getId());
         dto.setName(user.getName());
+        dto.setEmail(user.getEmail());
         dto.setActive(user.isActive());
         dto.setUserRole(user.getUserRole());
         dto.setCreatedAt(user.getCreatedAt());
@@ -47,6 +49,7 @@ public class UserMapper {
     public static User toUser(RegisterRequest request) {
         User user = new User();
         user.setName(request.getName());
+        user.setEmail(request.getEmail());
         user.setUserRole(Role.USER);
         user.setActive(true);
         return user;

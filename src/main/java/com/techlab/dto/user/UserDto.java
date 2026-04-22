@@ -16,8 +16,10 @@ import java.time.LocalDateTime;
 public class UserDto {
     @Schema(description = "Unique identifier of the user", example = "1")
     private Long id;
-    @Schema(description = "Username or login name", example = "john_doe")
+    @Schema(description = "User's display name", example = "Juan Pérez")
     private String name;
+    @Schema(description = "User's email (login)", example = "juan@example.com")
+    private String email;
     @Schema(description = "Whether the user is active", example = "true")
     private Boolean active;
     @Schema(description = "Timestamp when the user was created")

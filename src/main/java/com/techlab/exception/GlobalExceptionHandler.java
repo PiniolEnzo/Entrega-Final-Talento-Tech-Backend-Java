@@ -39,9 +39,9 @@ public class GlobalExceptionHandler {
 
     // Excepciones sobre usuarios y permisos
     @ExceptionHandler(DuplicateUserException.class)
-    public ResponseEntity<Map<String, String>> handleDuplicateUser() {
+    public ResponseEntity<Map<String, String>> handleDuplicateUser(DuplicateUserException ex) {
         return ResponseEntity.badRequest().body(
-                Map.of("error", "User is already registered.")
+                Map.of("error", ex.getMessage() != null ? ex.getMessage() : "User is already registered.")
         );
     }
 

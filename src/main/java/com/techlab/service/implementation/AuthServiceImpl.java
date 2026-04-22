@@ -4,7 +4,6 @@ import com.techlab.dto.auth.AuthResponse;
 import com.techlab.dto.auth.LoginRequest;
 import com.techlab.dto.user.RegisterRequest;
 import com.techlab.dto.user.UserDto;
-import com.techlab.entity.Role;
 import com.techlab.entity.User;
 import com.techlab.exception.DuplicateUserException;
 import com.techlab.exception.UserNotFoundException;
@@ -34,8 +33,14 @@ public class AuthServiceImpl implements IAuthService {
 
     @Override
     public AuthResponse login(LoginRequest request) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getName(), request.getPassword()));
-        UserDetails user = userRepository.findByName(request.getName()).orElseThrow(UserNotFoundException::new);
+        // Authenticate using email
+        authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+        );
+        // Find user by email
+        User user = userRepository.findByEmail(request.getEmail())
+            .orElseThrow(UserNotFoundException::new);
+        
         String token = jwtService.getToken(user);
         return AuthResponse.builder()
                 .token(token)
@@ -44,13 +49,19 @@ public class AuthServiceImpl implements IAuthService {
 
     @Override
     public UserDto register(RegisterRequest request) {
-        if (userRepository.existsByName(request.getName())){
-            throw new DuplicateUserException();
+        // Check if email already exists
+        if (userRepository.existsByEmail(request.getEmail())){
+            throw new DuplicateUserException("Email already registered");
         }
-        User  user = UserMapper.toUser(request);
+        
+        // Check if name already exists
+        if (userRepository.existsByName(request.getName())){
+            throw new DuplicateUserException("Username already exists");
+        }
+        
+        User user = UserMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setActive(true);
-        user.setUserRole(Role.USER);
+
         userRepository.save(user);
 
         return UserMapper.toUserDto(user);

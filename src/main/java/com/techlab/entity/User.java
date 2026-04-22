@@ -26,7 +26,10 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Schema(description = "Represents a user of the system")
-@Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = {"name"})})
+@Table(name = "users", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"name"}),
+    @UniqueConstraint(columnNames = {"email"})
+})
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User implements UserDetails {
     @Id
@@ -39,6 +42,10 @@ public class User implements UserDetails {
     @Column(name = "name", unique = true, nullable = false)
     @Schema(description = "Username used for login", example = "johndoe")
     private String name;
+
+    @Column(name = "email", unique = true, nullable = false)
+    @Schema(description = "User's email for login and contact", example = "juan@example.com")
+    private String email;
 
     @Column(name = "password", nullable = false)
     @Schema(description = "Encrypted user password", example = "$2a$10$...")
@@ -61,29 +68,33 @@ public class User implements UserDetails {
     @Schema(description = "Role assigned to the user", example = "ADMIN")
     private Role userRole;
 
-    /**
-     * Constructs a new User with the specified name, password, and active status.
+/**
+     * Constructs a new User with the specified name, email, password, and active status.
      *
      * @param name     The username
+     * @param email    The user's email
      * @param password The encrypted password
      * @param active   Whether the user is active
      */
-    public User(String name, String password, boolean active) {
+    public User(String name, String email, String password, boolean active) {
         this.name = name;
+        this.email = email;
         this.password = password;
         this.active = active;
     }
 
-/**
-     * Constructs a new User with the specified name, password, active status, and role.
+    /**
+     * Constructs a new User with the specified name, email, password, active status, and role.
      *
      * @param name      The username
+     * @param email    The user's email
      * @param password  The encrypted password
      * @param active    Whether the user is active
      * @param userRole  The role assigned to the user
      */
-    public User(String name, String password, boolean active, Role userRole) {
+    public User(String name, String email, String password, boolean active, Role userRole) {
         this.name = name;
+        this.email = email;
         this.password = password;
         this.active = active;
         this.userRole = userRole;
@@ -103,14 +114,15 @@ public class User implements UserDetails {
         // So we need to include "ROLE_" prefix for hasRole() to work correctly
         return List.of(new SimpleGrantedAuthority("ROLE_" + userRole.name()));
     }
+
     /**
-     * Returns the name of the user.
-     * This method is used by Spring Security for authentication.
+     * Returns the email of the user.
+     * This method is used by Spring Security for authentication (login).
      *
-     * @return The name of the user
+     * @return The email of the user
      */
     @Override
     public String getUsername() {
-        return this.name;
+        return this.email;
     }
 }

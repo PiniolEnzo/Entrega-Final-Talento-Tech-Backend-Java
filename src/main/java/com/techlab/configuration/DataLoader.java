@@ -38,7 +38,8 @@ public class DataLoader implements CommandLineRunner {
 
         // ==================== USERS ====================
         User admin = User.builder()
-                .name("admin")
+                .name("Admin")
+                .email("admin@techlab.com")
                 .password(passwordEncoder.encode("admin123"))
                 .active(true)
                 .userRole(Role.ADMIN)
@@ -46,7 +47,8 @@ public class DataLoader implements CommandLineRunner {
         admin = userRepository.save(admin);
 
         User user1 = User.builder()
-                .name("juan_perez")
+                .name("Juan Pérez")
+                .email("juan@example.com")
                 .password(passwordEncoder.encode("user1234"))
                 .active(true)
                 .userRole(Role.USER)
@@ -54,15 +56,18 @@ public class DataLoader implements CommandLineRunner {
         user1 = userRepository.save(user1);
 
         User user2 = User.builder()
-                .name("maria_garcia")
+                .name("María García")
+                .email("maria@example.com")
                 .password(passwordEncoder.encode("user1234"))
                 .active(true)
                 .userRole(Role.USER)
                 .build();
         user2 = userRepository.save(user2);
 
-        log.info("Created users: admin (id={}), juan_perez (id={}), maria_garcia (id={})", 
-                admin.getId(), user1.getId(), user2.getId());
+        log.info("Created users: admin (id={}, email={}), juan (id={}, email={}), maria (id={}, email={})", 
+                admin.getId(), admin.getEmail(),
+                user1.getId(), user1.getEmail(),
+                user2.getId(), user2.getEmail());
 
         // ==================== CATEGORIES ====================
         Category electronica = categoryRepository.save(new Category("Electrónica"));
@@ -223,20 +228,20 @@ public class DataLoader implements CommandLineRunner {
         log.info("  USUARIOS DE PRUEBA:                            ");
         log.info("  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  ");
         log.info("  👑 ADMIN:                                      ");
-        log.info("     username: admin                             ");
+        log.info("     email: admin@techlab.com                   ");
         log.info("     password: admin123                          ");
         log.info("                                                 ");
         log.info("  👤 USER 1:                                     ");
-        log.info("     username: juan_perez                        ");
+        log.info("     email: juan@example.com                   ");
         log.info("     password: user1234                          ");
         log.info("                                                 ");
         log.info("  👤 USER 2:                                     ");
-        log.info("     username: maria_garcia                      ");
+        log.info("     email: maria@example.com                  ");
         log.info("     password: user1234                          ");
         log.info("                                                 ");
         log.info("  📦 12 productos cargados en 5 categorías       ");
         log.info("  🛒 Carritos creados para usuarios              ");
-        log.info("  📋 Pedido de ejemplo para juan_perez           ");
+        log.info("  📋 Pedido de ejemplo para juan                ");
         log.info("                                                 ");
         log.info("  🌐 Swagger UI: http://localhost:8080/swagger-ui");
         log.info("  📚 API Docs: http://localhost:8080/v3/api-docs ");

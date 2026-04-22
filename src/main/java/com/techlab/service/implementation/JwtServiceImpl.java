@@ -4,11 +4,7 @@ import com.techlab.entity.User;
 import com.techlab.repository.IUserRepository;
 import com.techlab.service.IJwtService;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureException;
-import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
@@ -39,31 +35,21 @@ public class JwtServiceImpl implements IJwtService {
 
     @Override
     public String getToken(UserDetails user) {
-        // Find user by username to get their ID
-        Optional<User> userOpt = userRepository.findByName(user.getUsername());
+        // Find user by email to get their ID and name
+        Optional<User> userOpt = userRepository.findByEmail(user.getUsername());
         Long userId = userOpt.map(User::getId).orElse(null);
+        String name = userOpt.map(User::getName).orElse(user.getUsername());
+        String email = user.getUsername();
         
-        return generateToken(new HashMap<>(), user.getUsername(), userId);
+        return generateToken(name, email, userId);
     }
 
     @Override
     public String getUsernameFromToken(String token) {
         try {
             Claims claims = getAllClaims(token);
-            // Prefer username from claim, fallback to subject
-            String username = claims.get("username", String.class);
-            if (username != null && !username.isEmpty()) {
-                return username;
-            }
-            // If no username claim, try to get from subject (but subject is userId now)
-            // So we need to look up user by userId
-            String subject = claims.getSubject();
-            if (subject != null && subject.matches("\\d+")) {
-                // Subject is userId, can't get username directly
-                // This shouldn't happen with new tokens, but handle legacy
-                return null;
-            }
-            return subject;
+            // Email is stored as subject for authentication
+            return claims.getSubject();
         } catch (Exception e) {
             log.error("Error extracting username from token: {}", e.getMessage());
             return null;
@@ -73,18 +59,11 @@ public class JwtServiceImpl implements IJwtService {
     @Override
     public boolean isTokenValid(String token, UserDetails userDetails) {
         try {
-            final String username = getUsernameFromToken(token);
-            // If we couldn't get username from token, fall back to extracting userId
-            // and comparing with UserDetails
-            if (username == null) {
-                // Try to validate using userId in subject
-                Long userIdFromToken = extractUserId(token);
-                if (userIdFromToken != null && userDetails instanceof User) {
-                    return userIdFromToken.equals(((User) userDetails).getId());
-                }
+            String email = getUsernameFromToken(token);
+            if (email == null) {
                 return false;
             }
-            return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+            return (email.equals(userDetails.getUsername()) && !isTokenExpired(token));
         } catch (Exception e) {
             log.error("Token validation error: {}", e.getMessage());
             return false;
@@ -117,12 +96,6 @@ public class JwtServiceImpl implements IJwtService {
                 }
             }
             
-            // Second try: parse from subject (which contains userId as string)
-            String subject = claims.getSubject();
-            if (subject != null && subject.matches("\\d+")) {
-                return Long.parseLong(subject);
-            }
-            
             return null;
         } catch (Exception e) {
             log.error("Error extracting userId from token: {}", e.getMessage());
@@ -131,11 +104,12 @@ public class JwtServiceImpl implements IJwtService {
     }
 
     /**
-     * Generate JWT token with username as subject and userId in claims
+     * Generate JWT token with email as subject (for login) and userId/name in claims
      */
-    private String generateToken(Map<String, Object> extraClaims, String username, Long userId) {
-        Map<String, Object> claims = new HashMap<>(extraClaims);
-        claims.put("username", username);
+    private String generateToken(String name, String email, Long userId) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("name", name);
+        claims.put("email", email);
         if (userId != null) {
             claims.put("userId", userId);
         }
@@ -143,7 +117,7 @@ public class JwtServiceImpl implements IJwtService {
         return Jwts
                 .builder()
                 .setClaims(claims)
-                .setSubject(userId != null ? userId.toString() : username)
+                .setSubject(email)  // Email as subject for authentication
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
                 .signWith(getKey())

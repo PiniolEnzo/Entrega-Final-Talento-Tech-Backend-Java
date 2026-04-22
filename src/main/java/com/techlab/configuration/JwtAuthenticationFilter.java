@@ -35,6 +35,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         
         try {
+            // 1. Extraer token del header Authorization
             final String token = getTokenFromRequest(request);
             
             if (token == null) {
@@ -42,46 +43,48 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
 
-            // Check if token is blacklisted (user logged out)
+            // 2. Verificar si el token está en blacklist (logout)
             if (logoutService.isTokenInvalidated(token)) {
-                log.debug("Token is blacklisted (user logged out)");
+                log.debug("Token is blacklisted - user logged out");
                 filterChain.doFilter(request, response);
                 return;
             }
 
-            // Get username from token
-            final String username = jwtService.getUsernameFromToken(token);
+            // 3. Extraer email del token (subject)
+            final String email = jwtService.getUsernameFromToken(token);
             
-            // Also try to get userId directly from token
-            final Long userIdFromToken = jwtService.getUserIdFromToken(token);
+            if (email == null) {
+                log.debug("Token does not contain valid email");
+                filterChain.doFilter(request, response);
+                return;
+            }
 
-            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                // Standard flow: validate via username
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            // 4. Si no hay autenticación, cargar usuario por email y validar
+            if (SecurityContextHolder.getContext().getAuthentication() == null) {
+                // Cargar usuario por email (ahora email es el username para Spring Security)
+                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
                 
+                // Validar token contra el usuario
                 if (jwtService.isTokenValid(token, userDetails)) {
+                    // Obtener userId del token
+                    Long userId = jwtService.getUserIdFromToken(token);
+                    
+                    // Crear autenticación con userId como principal
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                            userIdFromToken != null ? userIdFromToken : userDetails,
+                            userId != null ? userId : userDetails,
                             null, 
                             userDetails.getAuthorities()
                     );
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
-                    log.debug("Authenticated user: {}, userId: {}", username, userIdFromToken);
+                    log.debug("Authenticated user: {} (userId: {})", email, userId);
                 } else {
-                    log.debug("Token validation failed for user: {}", username);
-                }
-            } else if (userIdFromToken != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                // Fallback: if username not available but userId is, try to load user by ID
-                try {
-                    log.debug("Token has userId but no username claim - authentication not set");
-                } catch (Exception e) {
-                    log.warn("Could not authenticate with userId only: {}", e.getMessage());
+                    log.debug("Token validation failed for email: {}", email);
                 }
             }
         } catch (Exception e) {
             log.error("Cannot set user authentication: {}", e.getMessage());
-            // Don't block request - Spring Security will handle based on endpoint config
+            // No bloqueamos el request - Spring Security maneja según config
         }
 
         filterChain.doFilter(request, response);
@@ -90,12 +93,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private String getTokenFromRequest(HttpServletRequest request) {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if(StringUtils.hasText(authHeader) && authHeader.startsWith("Bearer ")){
+        if (StringUtils.hasText(authHeader) && authHeader.startsWith("Bearer ")) {
             return authHeader.substring(7);
         }
 
         return null;
     }
-
 
 }
