@@ -5,6 +5,7 @@ import com.techlab.dto.auth.AuthResponse;
 import com.techlab.dto.auth.LoginRequest;
 import com.techlab.dto.user.RegisterRequest;
 import com.techlab.dto.user.UserDto;
+import com.techlab.dto.user.UserProfileResponse;
 import com.techlab.service.IAuthService;
 import com.techlab.service.IJwtService;
 import com.techlab.service.ILogoutService;
@@ -113,6 +114,52 @@ public class AuthController {
         }
         
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(
+            summary = "Get Current User Profile",
+            description = "Get profile data of the currently authenticated user"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User profile retrieved successfully",
+                    content = @Content(schema = @Schema(implementation = UserProfileResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - no token provided")
+    })
+    @GetMapping(value = "me")
+    public ResponseEntity<?> me() {
+        try {
+            // Get current user ID from security context
+            Long userId = null;
+            var authentication = org.springframework.security.core.context.SecurityContextHolder
+                    .getContext().getAuthentication();
+            
+            if (authentication != null && authentication.getPrincipal() instanceof Long) {
+                userId = (Long) authentication.getPrincipal();
+            }
+            
+            if (userId == null) {
+                return ResponseEntity.status(401).body(java.util.Map.of("error", "Not authenticated"));
+            }
+            
+            // Get user data from service
+            var user = authService.getCurrentUser();
+            if (user == null) {
+                return ResponseEntity.status(401).body(java.util.Map.of("error", "User not found"));
+            }
+            
+            // Build profile response (no sensitive data)
+            var profile = com.techlab.dto.user.UserProfileResponse.builder()
+                    .id(user.getId())
+                    .name(user.getName())
+                    .email(user.getEmail())
+                    .role(user.getUserRole().name())
+                    .active(user.isActive())
+                    .build();
+            
+            return ResponseEntity.ok(profile);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(java.util.Map.of("error", "Internal error: " + e.getMessage()));
+        }
     }
 
 
