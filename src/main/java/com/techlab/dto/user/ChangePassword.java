@@ -2,6 +2,7 @@ package com.techlab.dto.user;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -13,14 +14,18 @@ import lombok.Data;
 @Data
 @Schema(description = "Data required to change a user's password")
 public class ChangePassword {
-    @NotBlank(message = "Password is required.")
-    @Size(min = 6, max = 25, message = "Password must be between 6 to 25 characters long.")
-    @Schema(description = "Current password", example = "OldP@ss123", requiredMode = Schema.RequiredMode.REQUIRED, minLength = 6, maxLength = 25, format = "password")
+    @NotBlank(message = "Old password is required.")
+    @Size(min = 10, max = 25, message = "Password must be between 10 to 25 characters long.")
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{10,}$",
+            message = "Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character.")
+    @Schema(description = "Current password", example = "OldP4ss123-", requiredMode = Schema.RequiredMode.REQUIRED, minLength = 10, maxLength = 25, format = "password")
     private String oldPassword;
 
-    @NotBlank(message = "Password is required.")
-    @Size(min = 6, max = 25, message = "Password must be between 6 to 25 characters long.")
-    @Schema(description = "New password", example = "NewP@ss456", requiredMode = Schema.RequiredMode.REQUIRED, minLength = 6, maxLength = 25, format = "password")
+    @NotBlank(message = "New password is required.")
+    @Size(min = 10, max = 25, message = "Password must be between 10 to 25 characters long.")
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{10,}$",
+            message = "Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character.")
+    @Schema(description = "New password", example = "NewP4ss456-", requiredMode = Schema.RequiredMode.REQUIRED, minLength = 10, maxLength = 25, format = "password")
     private String newPassword;
 
 }
