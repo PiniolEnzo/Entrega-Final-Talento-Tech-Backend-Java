@@ -91,4 +91,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Product not found."));
     }
 
+    @ExceptionHandler(DuplicateCategory.class)
+    public ResponseEntity<Map<String, String>> handleDuplicateCategory(DuplicateCategory ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", ex.getMessage() != null ? ex.getMessage() : "Category with the same name already exists.")
+        );
+    }
+
 }

@@ -38,15 +38,15 @@ public class ProductController {
                     content = @Content(schema = @Schema(implementation = ProductResponse.class)))
     })
     @GetMapping
-    public List<ProductResponse> getAllProducts(
+    public ResponseEntity<List<ProductResponse>> getAllProducts(
             @RequestParam(name = "categoryId", required = false) Short categoryId
     ) {
 
         if (categoryId != null) {
-            return productService.getProductByCategoryId(categoryId);
+            return ResponseEntity.ok().body(productService.getProductByCategoryId(categoryId));
         }
 
-        return productService.getAll();
+        return ResponseEntity.ok().body(productService.getAll());
     }
 
     @Operation(

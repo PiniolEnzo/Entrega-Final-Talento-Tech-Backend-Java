@@ -73,8 +73,13 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public ProductResponse updateProduct(Long id, ProductRequest request) {
         Product product = productRepository.findById(id).orElseThrow(ProductNotFoundException::new);
-        product = ProductMapper.toProduct(request);
+
         product.setCategory(categoryRepository.findById(request.getCategoryId()).orElseThrow(CategoryNotFoundException::new));
+        product.setName(request.getName());
+        product.setDescription(request.getDescription());
+        product.setPrice(request.getPrice());
+        product.setStock(request.getStock());
+        product.setImageUrl(request.getImageUrl());
 
         productRepository.save(product);
 

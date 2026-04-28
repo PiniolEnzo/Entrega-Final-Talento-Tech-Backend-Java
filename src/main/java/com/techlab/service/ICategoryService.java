@@ -1,5 +1,6 @@
 package com.techlab.service;
 
+import com.techlab.dto.category.CategoryRequest;
 import com.techlab.dto.category.CategoryResponse;
 import com.techlab.entity.Category;
 
@@ -15,4 +16,9 @@ public interface ICategoryService {
 
     Category getById(Short id);
 
+    CategoryResponse create(Category category);
+
+    CategoryResponse update(Short id, CategoryRequest category);
+
+    void remove(Short id);
 }

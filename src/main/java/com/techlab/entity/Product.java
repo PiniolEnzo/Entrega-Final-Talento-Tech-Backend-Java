@@ -46,7 +46,7 @@ public class Product {
     private Float price;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "category_id", nullable = true)
     @Schema(description = "Category to which the product belongs.")
     private Category category;
 
