@@ -7,6 +7,7 @@ import com.techlab.dto.shoppingCart.UpdateItemRequest;
 import com.techlab.entity.ShoppingCart;
 import com.techlab.service.IShoppingCartService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -34,7 +35,10 @@ public class CartController {
 
     @Operation(
             summary = "Create new cart",
-            description = "Create a new empty shopping cart for the authenticated user"
+            description = "Create a new empty shopping cart for the authenticated user",
+            parameters = {
+                    @Parameter(name = "uriBuilder", description = "URI builder for constructing the location header of the created cart", required = true)
+            }
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Cart created successfully",
@@ -44,14 +48,16 @@ public class CartController {
     @PostMapping
     public ResponseEntity<CartResponse> createCart(UriComponentsBuilder uriBuilder){
         CartResponse cartResponse = cartService.createCart();
-        URI uri = uriBuilder.path("/carts/{id}").buildAndExpand(cartResponse.getId()).toUri();
-
-        return ResponseEntity.created(uri).body(cartResponse);
+        return ResponseEntity.created(uriBuilder.path("/carts/{id}").buildAndExpand(cartResponse.getId()).toUri()).body(cartResponse);
     }
 
     @Operation(
             summary = "Add item to cart",
-            description = "Add a product to an existing shopping cart"
+            description = "Add a product to an existing shopping cart",
+            parameters = {
+                    @Parameter(name = "cartId", description = "Unique identifier of the cart to which the item will be added", required = true, example = "1"),
+                    @Parameter(name = "request", description = "Request payload containing the product ID to add to the cart", required = true)
+            }
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Item added successfully",
@@ -72,7 +78,10 @@ public class CartController {
 
     @Operation(
             summary = "Get cart",
-            description = "Retrieve a shopping cart with all its items"
+            description = "Retrieve a shopping cart with all its items",
+            parameters = {
+                    @Parameter(name = "cartId", description = "Unique identifier of the cart to retrieve", required = true, example = "1")
+            }
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Cart retrieved successfully",
@@ -88,7 +97,12 @@ public class CartController {
 
     @Operation(
             summary = "Update item quantity",
-            description = "Update the quantity of a specific item in the cart"
+            description = "Update the quantity of a specific item in the cart",
+            parameters = {
+                    @Parameter(name = "cartId", description = "Unique identifier of the cart containing the item to update", required = true, example = "1"),
+                    @Parameter(name = "productId", description = "Unique identifier of the product whose quantity is to be updated", required = true, example = "1"),
+                    @Parameter(name = "request", description = "Request payload containing the new quantity for the item", required = true)
+            }
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Item updated successfully",
@@ -109,7 +123,11 @@ public class CartController {
 
     @Operation(
             summary = "Remove item",
-            description = "Remove a specific item from the cart"
+            description = "Remove a specific item from the cart",
+            parameters = {
+                    @Parameter(name = "cartId", description = "Unique identifier of the cart from which the item will be removed", required = true, example = "1"),
+                    @Parameter(name = "productId", description = "Unique identifier of the product to remove from the cart", required = true, example = "1")
+            }
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Item removed successfully"),
@@ -128,7 +146,10 @@ public class CartController {
 
     @Operation(
             summary = "Clear cart",
-            description = "Remove all items from the cart (empty the cart)"
+            description = "Remove all items from the cart (empty the cart)",
+            parameters = {
+                    @Parameter(name = "cartId", description = "Unique identifier of the cart to clear", required = true, example = "1")
+            }
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Cart cleared successfully"),

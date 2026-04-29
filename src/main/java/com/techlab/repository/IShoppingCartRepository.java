@@ -1,8 +1,9 @@
 package com.techlab.repository;
 
+import com.techlab.entity.ShoppingCart;
+import com.techlab.entity.User;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
-import com.techlab.entity.ShoppingCart;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -17,10 +18,10 @@ public interface IShoppingCartRepository extends JpaRepository<ShoppingCart, Lon
     Optional<ShoppingCart> getCartWithItems(@Param("cartId") Long cartId);
 
     @EntityGraph(attributePaths = "items.product")
-    @Query("SELECT sc FROM ShoppingCart sc WHERE sc.userId = :userId")
-    List<ShoppingCart> findByUserId(@Param("userId") Long userId);
+    @Query("SELECT sc FROM ShoppingCart sc WHERE sc.user = :user")
+    List<ShoppingCart> findByUser(@Param("user") User user);
 
-    @Query("SELECT sc FROM ShoppingCart sc WHERE sc.userId = :userId")
-    Optional<ShoppingCart> findFirstByUserId(@Param("userId") Long userId);
+    @Query("SELECT sc FROM ShoppingCart sc WHERE sc.user = :user")
+    Optional<ShoppingCart> findFirstByUser(@Param("user") User user);
 }
 

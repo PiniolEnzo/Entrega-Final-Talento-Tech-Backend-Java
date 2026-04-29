@@ -6,6 +6,7 @@ import com.techlab.entity.Category;
 import com.techlab.service.ICategoryService;
 import com.techlab.service.IProductService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -31,7 +32,15 @@ public class ProductController {
 
     @Operation(
             summary = "Get all products",
-            description = "Retrieve a list of all products. Optionally filter by categoryId"
+            description = "Retrieve a list of all products. Optionally filter by categoryId",
+            parameters = {
+                    @Parameter(
+                            name = "categoryId",
+                            description = "Filter products by category ID",
+                            required = false,
+                            example = "1"
+                    )
+            }
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Products retrieved successfully",
@@ -51,7 +60,15 @@ public class ProductController {
 
     @Operation(
             summary = "Get product by ID",
-            description = "Retrieve a specific product by its unique identifier"
+            description = "Retrieve a specific product by its unique identifier",
+            parameters = {
+                    @Parameter(
+                            name = "id",
+                            description = "Unique identifier of the product",
+                            required = true,
+                            example = "1"
+                    )
+            }
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Product found",
@@ -66,7 +83,19 @@ public class ProductController {
 
     @Operation(
             summary = "Create product",
-            description = "Create a new product in the catalog. Requires JWT authentication with ADMIN role."
+            description = "Create a new product in the catalog. Requires JWT authentication with ADMIN role.",
+            parameters = {
+                    @Parameter(
+                            name = "request",
+                            description = "Product creation request payload",
+                            required = true
+                    ),
+                    @Parameter(
+                            name = "uriBuilder",
+                            description = "URI builder for constructing the location header",
+                            required = true
+                    )
+            }
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Product created successfully",
@@ -91,7 +120,20 @@ public class ProductController {
 
     @Operation(
             summary = "Update product",
-            description = "Update an existing product. Requires JWT authentication with ADMIN role."
+            description = "Update an existing product. Requires JWT authentication with ADMIN role.",
+            parameters = {
+                    @Parameter(
+                            name = "id",
+                            description = "Unique identifier of the product to update",
+                            required = true,
+                            example = "1"
+                    ),
+                    @Parameter(
+                            name = "request",
+                            description = "Product update request payload",
+                            required = true
+                    )
+            }
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Product updated successfully",
@@ -112,7 +154,15 @@ public class ProductController {
 
     @Operation(
             summary = "Delete product",
-            description = "Delete a product by its unique identifier. Requires JWT authentication with ADMIN role."
+            description = "Delete a product by its unique identifier. Requires JWT authentication with ADMIN role.",
+            parameters = {
+                    @Parameter(
+                            name = "id",
+                            description = "Unique identifier of the product to delete",
+                            required = true,
+                            example = "1"
+                    )
+            }
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Product deleted successfully"),

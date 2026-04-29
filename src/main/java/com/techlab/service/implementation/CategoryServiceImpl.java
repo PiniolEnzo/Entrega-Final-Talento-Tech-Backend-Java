@@ -52,11 +52,12 @@ public class CategoryServiceImpl implements ICategoryService {
     }
 
     @Override
-    public CategoryResponse create(Category category) {
-        if (categoryRepository.existsByName(category.getName())){
-            throw new DuplicateCategory("Category with name " + category.getName() + " already exists");
+    public CategoryResponse create(CategoryRequest request) {
+        if (categoryRepository.existsByName(request.getName())){
+            throw new DuplicateCategory("Category with name " + request.getName() + " already exists");
         }
-        return CategoryMapper.toCategoryResponse(categoryRepository.save(category));
+
+        return CategoryMapper.toCategoryResponse(categoryRepository.save(CategoryMapper.toCategory(request)));
     }
 
     @Override

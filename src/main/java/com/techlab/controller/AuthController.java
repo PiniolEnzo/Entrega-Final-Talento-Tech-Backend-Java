@@ -12,6 +12,7 @@ import com.techlab.service.IAuthService;
 import com.techlab.service.IJwtService;
 import com.techlab.service.ILogoutService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -37,7 +38,10 @@ public class AuthController {
 
     @Operation(
             summary = "User Login",
-            description = "Authenticate a user and return an authentication token"
+            description = "Authenticate a user and return an authentication token",
+                parameters = {
+                        @Parameter(name = "request", description = "Login request payload containing email and password", required = true)
+                }
     )
     @ApiResponses(
             value ={
@@ -61,7 +65,10 @@ public class AuthController {
 
     @Operation(
             summary = "User Registration",
-            description = "Register a new user and return the created user details"
+            description = "Register a new user and return the created user details",
+            parameters = {
+                    @Parameter(name = "request", description = "Registration request payload containing user details", required = true)
+            }
     )
     @ApiResponses(
             value = {
@@ -78,18 +85,22 @@ public class AuthController {
                     required = true,
                     content = @Content(schema = @Schema(implementation = RegisterRequest.class))
             )
-                                                @RequestBody @Valid RegisterRequest request){
+            @RequestBody @Valid RegisterRequest request){
         return ResponseEntity.ok(authService.register(request));
     }
 
     @Operation(
             summary = "User Logout",
-            description = "Invalidate the current JWT token to log out the user"
+            description = "Invalidate the current JWT token to log out the user",
+            parameters = {
+                    @Parameter(name = "authHeader", description = "JWT token in the format 'Bearer {token}'", required = true)
+            }
     )
     @ApiResponses(
             value = {
                     @ApiResponse(responseCode = "200", description = "Successfully logged out"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized - no token provided")
+                    @ApiResponse(responseCode = "401", description = "Unauthorized - no token provided"),
+                    @ApiResponse(responseCode = "500", description = "Internal server error"),
             }
     )
     @PostMapping("/logout")
@@ -101,6 +112,7 @@ public class AuthController {
     @Operation(
             summary = "Get Current User Profile",
             description = "Get profile data of the currently authenticated user"
+
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User profile retrieved successfully",
@@ -117,7 +129,10 @@ public class AuthController {
 
     @Operation(
             summary = "Forgot Password",
-            description = "Initiate the password reset process by providing the user's email"
+            description = "Initiate the password reset process by providing the user's email",
+            parameters = {
+                    @Parameter(name = "request", description = "Forgot password request payload containing the user's email", required = true)
+            }
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Password reset initiated successfully"),
@@ -132,7 +147,10 @@ public class AuthController {
 
     @Operation(
             summary = "Validate Password Reset Token",
-            description = "Validate the password reset token to ensure it's valid and not expired"
+            description = "Validate the password reset token to ensure it's valid and not expired",
+            parameters = {
+                    @Parameter(name = "token", description = "Password reset token to validate", required = true)
+            }
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Token is valid"),
@@ -147,7 +165,10 @@ public class AuthController {
 
     @Operation(
             summary = "Change Password",
-            description = "Change the user's password using the old password and a valid reset token"
+            description = "Change the user's password using the old password and a valid reset token",
+            parameters = {
+                    @Parameter(name = "request", description = "Change password request payload containing old password, new password, and reset token", required = true)
+            }
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Password changed successfully"),

@@ -5,6 +5,7 @@ import com.techlab.dto.category.CategoryResponse;
 import com.techlab.entity.Category;
 import com.techlab.service.ICategoryService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -55,7 +56,15 @@ public class CategoryController {
 
     @Operation(
             summary = "Get category by ID",
-            description = "Retrieve a specific category by its unique identifier"
+            description = "Retrieve a specific category by its unique identifier",
+                parameters = {
+                        @Parameter(
+                                name = "id",
+                                description = "Unique identifier of the category to retrieve",
+                                required = true,
+                                example = "1"
+                        )
+                }
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Category found",
@@ -69,7 +78,10 @@ public class CategoryController {
 
     @Operation(
             summary = "Create a new category",
-            description = "Add a new product category to the system"
+            description = "Add a new product category to the system",
+            parameters = {
+                    @Parameter(name = "request", description = "Request payload containing category details", required = true)
+            }
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Category created successfully",
@@ -77,14 +89,18 @@ public class CategoryController {
             @ApiResponse(responseCode = "400", description = "Invalid category data provided")
     })
     @PostMapping()
-    public ResponseEntity<?> create(@Valid @RequestBody Category category, UriComponentsBuilder uriBuilder) {
-        CategoryResponse createdCategory = categoryService.create(category);
+    public ResponseEntity<?> create(@Valid @RequestBody CategoryRequest request, UriComponentsBuilder uriBuilder) {
+        CategoryResponse createdCategory = categoryService.create(request);
         return ResponseEntity.created(uriBuilder.path("/categories/{id}").buildAndExpand(createdCategory.getId()).toUri()).body(createdCategory);
     }
 
     @Operation(
             summary = "Update an existing category",
-            description = "Modify the details of an existing product category"
+            description = "Modify the details of an existing product category",
+            parameters = {
+                    @Parameter(name = "id", description = "Unique identifier of the category to update", required = true, example = "1"),
+                    @Parameter(name = "request", description = "Request payload containing updated category details", required = true)
+            }
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Category updated successfully",
@@ -101,7 +117,10 @@ public class CategoryController {
 
     @Operation(
             summary = "Delete a category",
-            description = "Remove a product category from the system"
+            description = "Remove a product category from the system",
+            parameters = {
+                    @Parameter(name = "id", description = "Unique identifier of the category to delete", required = true, example = "1")
+            }
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Category deleted successfully"),

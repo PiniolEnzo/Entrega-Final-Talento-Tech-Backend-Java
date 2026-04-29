@@ -10,4 +10,6 @@ public interface IOrderService {
     OrderResponse getOrder(Long orderId);
 
     List<OrderResponse> getCurrentUserOrders();
+
+    OrderResponse updateOrderStatus(Long orderId, String status);
 }

@@ -3,6 +3,8 @@ package com.techlab.controller;
 import com.techlab.dto.user.*;
 import com.techlab.service.IUserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -60,7 +62,11 @@ public class UserController {
 
     @Operation(
             summary = "Update user",
-            description = "Update an existing user's information. Users can only update their own profile."
+            description = "Update an existing user's information. Users can only update their own profile.",
+            parameters = {
+                    @Parameter(name = "id", description = "Unique identifier of the user to update", required = true, example = "2"),
+                    @Parameter(name = "request", description = "Request body containing updated user information", required = true)
+            }
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User updated successfully",
@@ -81,7 +87,10 @@ public class UserController {
 
     @Operation(
             summary = "Delete user (ADMIN)",
-            description = "Delete a user by their unique identifier. Requires JWT authentication with ADMIN role."
+            description = "Delete a user by their unique identifier. Requires JWT authentication with ADMIN role.",
+            parameters = {
+                    @Parameter(name = "id", description = "Unique identifier of the user to delete", required = true, example = "2")
+            }
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "User deleted successfully"),

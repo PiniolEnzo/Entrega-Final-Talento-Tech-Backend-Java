@@ -31,9 +31,10 @@ public class ShoppingCart {
     @Schema(description = "Unique identifier for the shopping cart.", example = "1")
     private Long id;
 
-    @Column(name = "user_id")
-    @Schema(description = "ID of the user who owns this cart.", example = "1")
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    @Schema(description = "User who owns this cart.")
+    private User user;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.MERGE, orphanRemoval = true, fetch = FetchType.EAGER)
     @Schema(description = "Set of items currently in the shopping cart.")
@@ -87,11 +88,12 @@ public class ShoppingCart {
         if (item != null){
             item.setQuantity(item.getQuantity() + 1);
         }else {
-            item = new CartItem();
-            item.setProduct(product);
-            item.setQuantity(1);
-            item.setCart(this);
-            items.add(item);
+            CartItem itemNuevo = new CartItem();
+            itemNuevo.setProduct(product);
+            itemNuevo.setQuantity(1);
+            itemNuevo.setCart(this);
+            items.add(itemNuevo);
+            return itemNuevo;
         }
 
         return item;
@@ -134,11 +136,11 @@ public class ShoppingCart {
     /**
      * Checks if the cart belongs to a specific user.
      *
-     * @param userId The user ID to check.
+     * @param user The user to check ownership against.
      * @return {@code true} if the cart belongs to the user, {@code false} otherwise.
      */
-    public boolean belongsTo(Long userId) {
-        return this.userId != null && this.userId.equals(userId);
+    public boolean belongsTo(User user) {
+        return this.user != null && this.user.equals(user);
     }
 
 }

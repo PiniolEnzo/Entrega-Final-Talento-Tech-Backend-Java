@@ -36,7 +36,7 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
     public CartResponse createCart() {
         User user = authService.getCurrentUser();
         ShoppingCart cart = new ShoppingCart();
-        cart.setUserId(user.getId());
+        cart.setUser(user);
         shoppingCartRepository.save(cart);
         return ShoppingCartMapper.toCartResponse(cart);
     }
@@ -101,7 +101,7 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
         if (currentUser.getId()==null){
             throw new AccessDeniedException("Authentication required");
         }
-        if (!cart.belongsTo(currentUser.getId())){
+        if (!cart.belongsTo(currentUser)){
             throw new AccessDeniedException("You do not have permission to access this cart");
         }
     }

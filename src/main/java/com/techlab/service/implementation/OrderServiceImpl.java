@@ -2,7 +2,7 @@ package com.techlab.service.implementation;
 
 import com.techlab.dto.order.OrderResponse;
 import com.techlab.entity.Order;
-import com.techlab.entity.Role;
+import com.techlab.entity.PaymentStatus;
 import com.techlab.entity.User;
 import com.techlab.exception.OrderNotFoundException;
 import com.techlab.mapper.OrderMapper;
@@ -10,7 +10,6 @@ import com.techlab.repository.IOrderRepository;
 import com.techlab.service.IAuthService;
 import com.techlab.service.IOrderService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,5 +35,13 @@ public class OrderServiceImpl implements IOrderService {
     public List<OrderResponse> getCurrentUserOrders() {
         User currentUser = authService.getCurrentUser();
         return OrderMapper.toOrderResponse(orderRepository.findByCustomerId(currentUser.getId()));
+    }
+
+    @Override
+    public OrderResponse updateOrderStatus(Long orderId, String status) {
+        Order order = orderRepository.findById(orderId).orElseThrow(OrderNotFoundException::new);
+        order.setPaymentStatus(PaymentStatus.fromString(status.toUpperCase()));
+        orderRepository.save(order);
+        return OrderMapper.toOrderResponse(order);
     }
 }

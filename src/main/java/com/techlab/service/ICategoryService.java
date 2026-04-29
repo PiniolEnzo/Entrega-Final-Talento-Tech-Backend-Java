@@ -16,7 +16,7 @@ public interface ICategoryService {
 
     Category getById(Short id);
 
-    CategoryResponse create(Category category);
+    CategoryResponse create(CategoryRequest category);
 
     CategoryResponse update(Short id, CategoryRequest category);
 

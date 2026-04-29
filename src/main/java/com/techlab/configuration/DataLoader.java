@@ -204,11 +204,11 @@ public class DataLoader implements CommandLineRunner {
 
         // ==================== SHOPPING CART (optional) ====================
         ShoppingCart cart1 = new ShoppingCart();
-        cart1.setUserId(user1.getId());
+        cart1.setUser(user1);
         cart1 = cartRepository.save(cart1);
 
         ShoppingCart cart2 = new ShoppingCart();
-        cart2.setUserId(user2.getId());
+        cart2.setUser(user2);
         cart2 = cartRepository.save(cart2);
 
         log.info("Created shopping carts for users");
