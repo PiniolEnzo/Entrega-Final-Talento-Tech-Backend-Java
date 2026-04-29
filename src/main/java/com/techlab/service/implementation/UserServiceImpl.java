@@ -62,16 +62,4 @@ public class UserServiceImpl implements IUserService {
         User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
         user.setActive(false);
     }
-
-    @Override
-    public void changePassword(Long id, ChangePassword request) {
-        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
-
-        if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
-            throw new AccessDeniedException("Password does not match.");
-        }
-
-        user.setPassword(request.getNewPassword());
-        userRepository.save(user);
-    }
 }

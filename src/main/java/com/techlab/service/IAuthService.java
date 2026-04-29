@@ -4,6 +4,7 @@ import com.techlab.dto.auth.AuthResponse;
 import com.techlab.dto.auth.LoginRequest;
 import com.techlab.dto.user.RegisterRequest;
 import com.techlab.dto.user.UserDto;
+import com.techlab.entity.PasswordChangeToken;
 import com.techlab.entity.User;
 
 public interface IAuthService {
@@ -13,4 +14,11 @@ public interface IAuthService {
     UserDto register(RegisterRequest request);
 
     User getCurrentUser();
+
+    void createPasswordResetToken(String email);
+
+    void changePassword(String oldPassword, String newPassword, String token);
+
+    PasswordChangeToken validatePasswordResetToken(String token);
+
 }

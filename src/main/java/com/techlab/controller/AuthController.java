@@ -2,7 +2,9 @@ package com.techlab.controller;
 
 
 import com.techlab.dto.auth.AuthResponse;
+import com.techlab.dto.auth.ForgotPasswordRequest;
 import com.techlab.dto.auth.LoginRequest;
+import com.techlab.dto.user.ChangePassword;
 import com.techlab.dto.user.RegisterRequest;
 import com.techlab.dto.user.UserDto;
 import com.techlab.dto.user.UserProfileResponse;
@@ -20,6 +22,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
@@ -43,7 +47,7 @@ public class AuthController {
                     @ApiResponse(responseCode = "401", description = "Unauthorized - invalid credentials")
             }
     )
-    @PostMapping(value = "login")
+    @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Login request payload",
@@ -67,7 +71,7 @@ public class AuthController {
                     @ApiResponse(responseCode = "409", description = "Conflict in registration")
             }
     )
-    @PostMapping(value = "register")
+    @PostMapping("/register")
     public ResponseEntity<UserDto> register(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Registration request payload",
@@ -88,7 +92,7 @@ public class AuthController {
                     @ApiResponse(responseCode = "401", description = "Unauthorized - no token provided")
             }
     )
-    @PostMapping(value = "logout")
+    @PostMapping("/logout")
     public ResponseEntity<Void> logout(
             @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authHeader) {
         
@@ -123,9 +127,11 @@ public class AuthController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User profile retrieved successfully",
                     content = @Content(schema = @Schema(implementation = UserProfileResponse.class))),
-            @ApiResponse(responseCode = "401", description = "Unauthorized - no token provided")
+            @ApiResponse(responseCode = "401", description = "Unauthorized - no token provided"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping(value = "me")
+    @GetMapping("/me")
     public ResponseEntity<?> me() {
         try {
             // Get current user ID from security context
@@ -138,28 +144,43 @@ public class AuthController {
             }
             
             if (userId == null) {
-                return ResponseEntity.status(401).body(java.util.Map.of("error", "Not authenticated"));
+                return ResponseEntity.status(401).body(Map.of("error", "Not authenticated"));
             }
             
             // Get user data from service
             var user = authService.getCurrentUser();
             if (user == null) {
-                return ResponseEntity.status(401).body(java.util.Map.of("error", "User not found"));
+                return ResponseEntity.status(404).body(Map.of("error", "User not found"));
             }
             
             // Build profile response (no sensitive data)
-            var profile = com.techlab.dto.user.UserProfileResponse.builder()
-                    .id(user.getId())
+            UserProfileResponse profile = com.techlab.dto.user.UserProfileResponse.builder()
                     .name(user.getName())
                     .email(user.getEmail())
-                    .role(user.getUserRole().name())
-                    .active(user.isActive())
                     .build();
             
             return ResponseEntity.ok(profile);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(java.util.Map.of("error", "Internal error: " + e.getMessage()));
+            return ResponseEntity.status(500).body(Map.of("error", "Internal error: " + e.getMessage()));
         }
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        authService.createPasswordResetToken(request.getEmail());
+        return ResponseEntity.ok().body(Map.of("message", "If an account with that email exists, a password reset link has been sent."));
+    }
+
+    @GetMapping("/validate")
+    public ResponseEntity<?> validateToken(@RequestParam String token) {
+        authService.validatePasswordResetToken(token);
+        return ResponseEntity.ok().body(Map.of("message", "Token is valid"));
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePassword request) {
+        authService.changePassword(request.getOldPassword(), request.getNewPassword(), request.getToken());
+        return ResponseEntity.ok().body(Map.of("message", "Password changed successfully"));
     }
 
 

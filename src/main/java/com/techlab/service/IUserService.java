@@ -20,6 +20,4 @@ public interface IUserService {
 
     void logicalDelete(Long id);
 
-    void changePassword(Long id, ChangePassword request);
-
 }

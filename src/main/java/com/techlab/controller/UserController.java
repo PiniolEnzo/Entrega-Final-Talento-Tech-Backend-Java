@@ -1,9 +1,6 @@
 package com.techlab.controller;
 
-import com.techlab.dto.auth.AuthResponse;
 import com.techlab.dto.user.*;
-import com.techlab.mapper.UserMapper;
-import com.techlab.service.IAuthService;
 import com.techlab.service.IUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -13,16 +10,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
+
+import static com.techlab.utils.UserAccessValidate.validateUserAccess;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,43 +23,6 @@ import java.util.List;
 @Tag(name = "Users", description = "Operations for user management")
 public class UserController {
     private final IUserService userService;
-
-    /**
-     * Get current user ID from security context
-     */
-    private Long getCurrentUserId() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.getPrincipal() instanceof Long) {
-            return (Long) auth.getPrincipal();
-        }
-        return null;
-    }
-
-    /**
-     * Check if current user is admin
-     */
-    private boolean isAdmin() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null) {
-            return auth.getAuthorities().stream()
-                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-        }
-        return false;
-    }
-
-    /**
-     * Validate that user can access the resource: either own profile or admin
-     */
-    private void validateUserAccess(Long targetUserId) {
-        Long currentUserId = getCurrentUserId();
-        if (currentUserId == null) {
-            throw new AccessDeniedException("Authentication required");
-        }
-        // Admin can access all, USER can only access their own profile
-        if (!isAdmin() && !targetUserId.equals(currentUserId)) {
-            throw new AccessDeniedException("No tienes acceso a este usuario");
-        }
-    }
 
     @Operation(
             summary = "Get all users (ADMIN)",
@@ -139,26 +95,4 @@ public class UserController {
         userService.delete(id);
         return ResponseEntity.noContent().build();
     }
-
-    @Operation(
-            summary = "Change user password",
-            description = "Change the password for a specific user. Users can only change their own password."
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Password changed successfully"),
-            @ApiResponse(responseCode = "400", description = "Bad request - current password is incorrect"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "403", description = "Access denied - can only change own password"),
-            @ApiResponse(responseCode = "404", description = "User not found")
-    })
-    @PostMapping("/{id}/change-password")
-    public ResponseEntity<Void> changePassword (
-            @PathVariable Long id,
-            @Valid @RequestBody ChangePassword request){
-
-        validateUserAccess(id);
-        userService.changePassword(id, request);
-        return ResponseEntity.noContent().build();
-    }
-
 }

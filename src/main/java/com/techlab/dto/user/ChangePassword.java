@@ -28,4 +28,8 @@ public class ChangePassword {
     @Schema(description = "New password", example = "NewP4ss456-", requiredMode = Schema.RequiredMode.REQUIRED, minLength = 10, maxLength = 25, format = "password")
     private String newPassword;
 
+    @NotBlank(message = "Token is required.")
+    @Schema(description = "Password reset token", example = "abc123def456ghi789", requiredMode = Schema.RequiredMode.REQUIRED)
+    private String token;
+
 }
