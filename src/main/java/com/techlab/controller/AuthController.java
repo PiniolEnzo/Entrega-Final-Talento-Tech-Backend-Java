@@ -93,31 +93,9 @@ public class AuthController {
             }
     )
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(
-            @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authHeader) {
-        
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return ResponseEntity.status(401).build();
-        }
-        
-        String token = authHeader.substring(7);
-        
-        // Get token expiration time
-        Long userId = jwtService.extractUserId(token);
-        if (userId == null) {
-            return ResponseEntity.status(401).build();
-        }
-        
-        // Get expiration from token
-        Long expiration = jwtService.getUserIdFromToken(token);
-        // Note: We need to get the actual expiration time from the token
-        // Let's use a method to get expiration
-        java.util.Date expirationDate = jwtService.getTokenExpiration(token);
-        if (expirationDate != null) {
-            logoutService.invalidateToken(token, expirationDate.getTime());
-        }
-        
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Void> logout(@RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authHeader) {
+        authService.logout(authHeader);
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(
@@ -133,50 +111,49 @@ public class AuthController {
     })
     @GetMapping("/me")
     public ResponseEntity<?> me() {
-        try {
-            // Get current user ID from security context
-            Long userId = null;
-            var authentication = org.springframework.security.core.context.SecurityContextHolder
-                    .getContext().getAuthentication();
-            
-            if (authentication != null && authentication.getPrincipal() instanceof Long) {
-                userId = (Long) authentication.getPrincipal();
-            }
-            
-            if (userId == null) {
-                return ResponseEntity.status(401).body(Map.of("error", "Not authenticated"));
-            }
-            
-            // Get user data from service
-            var user = authService.getCurrentUser();
-            if (user == null) {
-                return ResponseEntity.status(404).body(Map.of("error", "User not found"));
-            }
-            
-            // Build profile response (no sensitive data)
-            UserProfileResponse profile = com.techlab.dto.user.UserProfileResponse.builder()
-                    .name(user.getName())
-                    .email(user.getEmail())
-                    .build();
-            
-            return ResponseEntity.ok(profile);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(Map.of("error", "Internal error: " + e.getMessage()));
-        }
+        return ResponseEntity.ok(authService.getUserProfile(authService.getCurrentUser().getId()));
     }
 
+
+    @Operation(
+            summary = "Forgot Password",
+            description = "Initiate the password reset process by providing the user's email"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Password reset initiated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid email format"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
         authService.createPasswordResetToken(request.getEmail());
         return ResponseEntity.ok().body(Map.of("message", "If an account with that email exists, a password reset link has been sent."));
     }
 
+    @Operation(
+            summary = "Validate Password Reset Token",
+            description = "Validate the password reset token to ensure it's valid and not expired"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Token is valid"),
+            @ApiResponse(responseCode = "400", description = "Invalid or expired token"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @GetMapping("/validate")
     public ResponseEntity<?> validateToken(@RequestParam String token) {
         authService.validatePasswordResetToken(token);
         return ResponseEntity.ok().body(Map.of("message", "Token is valid"));
     }
 
+    @Operation(
+            summary = "Change Password",
+            description = "Change the user's password using the old password and a valid reset token"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Password changed successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request - incorrect old password or invalid/expired token"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @PostMapping("/change-password")
     public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePassword request) {
         authService.changePassword(request.getOldPassword(), request.getNewPassword(), request.getToken());

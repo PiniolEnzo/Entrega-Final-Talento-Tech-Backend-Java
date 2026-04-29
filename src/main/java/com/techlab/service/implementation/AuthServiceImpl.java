@@ -4,6 +4,7 @@ import com.techlab.dto.auth.AuthResponse;
 import com.techlab.dto.auth.LoginRequest;
 import com.techlab.dto.user.RegisterRequest;
 import com.techlab.dto.user.UserDto;
+import com.techlab.dto.user.UserProfileResponse;
 import com.techlab.entity.PasswordChangeToken;
 import com.techlab.entity.User;
 import com.techlab.exception.DuplicateUserException;
@@ -14,8 +15,12 @@ import com.techlab.repository.IUserRepository;
 import com.techlab.service.IAuthService;
 import com.techlab.service.IEmailService;
 import com.techlab.service.IJwtService;
+import com.techlab.service.ILogoutService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,6 +28,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.UUID;
 
 import static com.techlab.utils.UserAccessValidate.validateUserAccess;
@@ -38,6 +44,7 @@ public class AuthServiceImpl implements IAuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final IEmailService emailService;
+    private final ILogoutService logoutService;
 
 
     @Override
@@ -77,6 +84,48 @@ public class AuthServiceImpl implements IAuthService {
     }
 
     @Override
+    public void logout(String authHeader) {
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new InsufficientAuthenticationException("Invalid Authorization header");
+        }
+
+        String token = authHeader.substring(7);
+
+        // Get token expiration time
+        Long userId = jwtService.extractUserId(token);
+        if (userId == null) {
+            throw new BadCredentialsException("Invalid token");
+        }
+
+        validateUserAccess(userId);
+
+        // Get expiration from token
+        Long expiration = jwtService.getUserIdFromToken(token);
+        // Note: We need to get the actual expiration time from the token
+        // Let's use a method to get expiration
+        Date expirationDate = jwtService.getTokenExpiration(token);
+        if (expirationDate != null) {
+            logoutService.invalidateToken(token, expirationDate.getTime());
+        }
+    }
+
+    @Override
+    public UserProfileResponse getUserProfile(Long userId) {
+
+        validateUserAccess(userId);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
+
+        return UserProfileResponse.builder()
+                .name(user.getName())
+                .email(user.getEmail())
+                .build();
+    }
+
+
+    @Override
     public User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication==null || authentication.getPrincipal()==null){
@@ -85,11 +134,7 @@ public class AuthServiceImpl implements IAuthService {
 
         Long userId = (Long) authentication.getPrincipal();
 
-        try{
-            return userRepository.findById(userId).orElse(null);
-        } catch (ClassCastException e){
-            return null;
-        }
+        return userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
     }
 
     @Override
