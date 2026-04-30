@@ -13,7 +13,7 @@ spring:
     hibernate:
       ddl-auto: update
     properties:
-      dialect: org.hibernate.dialect.MySQL5Dialect
+      dialect: org.hibernate.dialect.PostgreSQLDialect
   jwt:
     secret: ${JWT_SECRET}
     expiration: ${JWT_EXPIRATION} # 15 minutes in milliseconds
