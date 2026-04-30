@@ -16,6 +16,7 @@ import com.techlab.service.IAuthService;
 import com.techlab.service.IEmailService;
 import com.techlab.service.IJwtService;
 import com.techlab.service.ILogoutService;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -138,7 +139,7 @@ public class AuthServiceImpl implements IAuthService {
     }
 
     @Override
-    public void createPasswordResetToken(String email) {
+    public void createPasswordResetToken(String email) throws MessagingException {
         User user = userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
 
         validateUserAccess(user.getId());

@@ -7,6 +7,7 @@ import com.techlab.dto.user.UserDto;
 import com.techlab.dto.user.UserProfileResponse;
 import com.techlab.entity.PasswordChangeToken;
 import com.techlab.entity.User;
+import jakarta.mail.MessagingException;
 
 public interface IAuthService {
 
@@ -16,7 +17,7 @@ public interface IAuthService {
 
     User getCurrentUser();
 
-    void createPasswordResetToken(String email);
+    void createPasswordResetToken(String email) throws MessagingException;
 
     void changePassword(String oldPassword, String newPassword, String token);
 
