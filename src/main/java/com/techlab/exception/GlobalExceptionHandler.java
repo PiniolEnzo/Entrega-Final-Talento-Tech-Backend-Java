@@ -1,5 +1,6 @@
 package com.techlab.exception;
 
+import jakarta.mail.MessagingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -105,6 +106,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InsufficientAuthenticationException.class)
     public ResponseEntity<Map<String, String>> handleInsufficientAuthentication() {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Authentication required to access this resource."));
+    }
+
+    // Email exceptions
+    @ExceptionHandler(MessagingException.class)
+    public ResponseEntity<Map<String, String>> handleMessagingException() {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to send email. Please try again later."));
     }
 
 }
