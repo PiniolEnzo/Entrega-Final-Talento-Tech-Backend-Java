@@ -1,21 +1,24 @@
 package com.techlab.service.implementation;
 
+import com.techlab.service.IEmailService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-@AllArgsConstructor
-@Service
-public class EmailService {
-    private JavaMailSender mailSender;
+@RequiredArgsConstructor
+@Service("emailService")
+public class EmailService implements IEmailService {
+    private final JavaMailSender mailSender;
 
     @Value("${app.frontend.url}")
     private String baseUrl;
 
+    @Override
     public void sendPasswordResetEmail(String to, String token) throws MessagingException {
 
         String resetLink = baseUrl + "/reset?token=" + token;
