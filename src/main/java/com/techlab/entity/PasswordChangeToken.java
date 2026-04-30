@@ -26,7 +26,7 @@ public class PasswordChangeToken {
     private String token;
 
     @ManyToOne
-    @Column(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     @Schema(description = "The user associated with this password reset token.", example = "2")
     private User user;
 
