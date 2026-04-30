@@ -29,33 +29,54 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authRequest ->
                         authRequest
-                                // ============ AUTH PÚBLICO ============
+                                // ============ AUTH ============
                                 .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/users").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/auth/logout").hasAnyRole(Role.ADMIN.name(), Role.USER.name())
+                                .requestMatchers(HttpMethod.POST, "/auth/forgot-password").hasAnyRole(Role.ADMIN.name(), Role.USER.name())
+                                .requestMatchers(HttpMethod.POST, "/auth/validate").hasAnyRole(Role.ADMIN.name(), Role.USER.name())
+                                .requestMatchers(HttpMethod.POST, "/auth/change-password").hasAnyRole(Role.ADMIN.name(), Role.USER.name())
+                                .requestMatchers(HttpMethod.GET, "/auth/me").hasAnyRole(Role.ADMIN.name(), Role.USER.name())
 
-                                // ============ PRODUCTS - Lectura pública, escritura admin ============
-                                .requestMatchers(HttpMethod.GET, "/products/**").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/products/**").hasRole(Role.ADMIN.name())
-                                .requestMatchers(HttpMethod.PUT, "/products/**").hasRole(Role.ADMIN.name())
-                                .requestMatchers(HttpMethod.DELETE, "/products/**").hasRole(Role.ADMIN.name())
+                                // ============ CARTS ============
+                                .requestMatchers(HttpMethod.POST, "/carts").hasRole(Role.USER.name())
+                                .requestMatchers(HttpMethod.POST, "/carts/*/items").hasRole(Role.USER.name())
+                                .requestMatchers(HttpMethod.GET, "/carts/*").hasRole(Role.USER.name())
+                                .requestMatchers(HttpMethod.PUT, "/carts/*/items/*").hasRole(Role.USER.name())
+                                .requestMatchers(HttpMethod.DELETE, "/carts/*/items/*").hasRole(Role.USER.name())
+                                .requestMatchers(HttpMethod.DELETE, "/carts/*/items").hasRole(Role.USER.name())
 
-                                // ============ ORDERS - USER ve los propios, ADMIN ve todos ============
-                                .requestMatchers(HttpMethod.GET, "/orders/mis-pedidos").hasRole(Role.USER.name())
+                                // ============ CATEGORIES ============
+                                .requestMatchers(HttpMethod.GET, "/categories").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/categories/all").hasRole(Role.ADMIN.name())
+                                .requestMatchers(HttpMethod.GET, "/categories/*").hasAnyRole(Role.ADMIN.name(), Role.USER.name())
+                                .requestMatchers(HttpMethod.POST, "/categories").hasRole(Role.ADMIN.name())
+                                .requestMatchers(HttpMethod.PUT, "/categories/*").hasRole(Role.ADMIN.name())
+                                .requestMatchers(HttpMethod.DELETE, "/categories/*").hasRole(Role.ADMIN.name())
+
+                                // ============ ORDERS ============
+                                .requestMatchers(HttpMethod.GET, "/orders/my-orders").hasRole(Role.USER.name())
                                 .requestMatchers(HttpMethod.GET, "/orders").hasRole(Role.ADMIN.name())
-                                .requestMatchers(HttpMethod.GET, "/orders/**").hasRole(Role.ADMIN.name())
+                                .requestMatchers(HttpMethod.GET, "/orders/*").hasRole(Role.ADMIN.name())
+                                .requestMatchers(HttpMethod.PUT, "/orders/*/status").hasRole(Role.ADMIN.name())
 
-                                // ============ CARTS - Requiere autenticación ============
-                                .requestMatchers("/carts/**").hasRole(Role.USER.name())
+                                // ============ PRODUCTS ============
+                                .requestMatchers(HttpMethod.GET, "/products").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/products/*").hasAnyRole(Role.ADMIN.name(), Role.USER.name())
+                                .requestMatchers(HttpMethod.POST, "/products").hasRole(Role.ADMIN.name())
+                                .requestMatchers(HttpMethod.PUT, "/products/*").hasRole(Role.ADMIN.name())
+                                .requestMatchers(HttpMethod.DELETE, "/products/*").hasRole(Role.ADMIN.name())
 
-                                // ============ USERS - USER solo propio, ADMIN todos ============
+                                // ============ USERS ============
                                 .requestMatchers(HttpMethod.GET, "/users").hasRole(Role.ADMIN.name())
-                                .requestMatchers(HttpMethod.DELETE, "/users/**").hasRole(Role.ADMIN.name())
+                                .requestMatchers(HttpMethod.GET, "/users/*").hasRole(Role.ADMIN.name())
+                                .requestMatchers(HttpMethod.PUT, "/users/*").hasAnyRole(Role.ADMIN.name(), Role.USER.name())
+                                .requestMatchers(HttpMethod.DELETE, "/users/*").hasRole(Role.ADMIN.name())
 
                                 // ============ SWAGGER ============
-                                .requestMatchers("/swagger-ui/**").permitAll()
-                                .requestMatchers("/swagger-ui.html").permitAll()
-                                .requestMatchers("/v3/api-docs/**").permitAll()
+                                .requestMatchers("/swagger-ui/**").hasRole(Role.ADMIN.name())
+                                .requestMatchers("/swagger-ui.html").hasRole(Role.ADMIN.name())
+                                .requestMatchers("/v3/api-docs/**").hasRole(Role.ADMIN.name())
 
                                 // ============ FALLBACK ============
                                 .anyRequest().authenticated()
