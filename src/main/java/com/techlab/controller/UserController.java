@@ -4,7 +4,6 @@ import com.techlab.dto.user.*;
 import com.techlab.service.IUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -44,18 +43,17 @@ public class UserController {
 
     @Operation(
             summary = "Get user by ID",
-            description = "Retrieve a specific user by their unique identifier. Users can only view their own profile."
+            description = "Retrieve a specific user by their unique identifier (ADMIN)"
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User found",
                     content = @Content(schema = @Schema(implementation = UserDto.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "403", description = "Access denied - can only view own profile"),
+            @ApiResponse(responseCode = "403", description = "Access denied"),
             @ApiResponse(responseCode = "404", description = "User not found")
     })
     @GetMapping("{id}")
     public ResponseEntity<UserDto> getUser(@PathVariable Long id){
-        validateUserAccess(id);
         return ResponseEntity.ok().body(userService.findById(id));
     }
 
