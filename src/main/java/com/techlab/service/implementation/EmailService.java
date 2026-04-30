@@ -19,7 +19,7 @@ public class EmailService implements IEmailService {
     private String baseUrl;
 
     @Override
-    public void sendPasswordResetEmail(String to, String token) throws MessagingException {
+    public void sendPasswordResetEmail(String to, String token) {
 
         String resetLink = baseUrl + "/reset?token=" + token;
 
@@ -29,13 +29,19 @@ public class EmailService implements IEmailService {
                 "style='padding:10px 20px;background:#007bff;color:white;text-decoration:none;'>"
                 + "Cambiar contraseña</a>";
 
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
-        helper.setTo(to);
-        helper.setSubject("Recuperación de contraseña");
-        helper.setText(html, true);
+        MimeMessage message = mailSender.createMimeMessage();
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+            helper.setTo(to);
+            helper.setSubject("Recuperación de contraseña");
+            helper.setText(html, true);
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
 
         mailSender.send(message);
+
     }
 }

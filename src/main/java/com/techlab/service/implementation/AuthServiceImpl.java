@@ -139,7 +139,7 @@ public class AuthServiceImpl implements IAuthService {
     }
 
     @Override
-    public void createPasswordResetToken(String email) throws MessagingException {
+    public void createPasswordResetToken(String email) {
         User user = userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
 
         validateUserAccess(user.getId());

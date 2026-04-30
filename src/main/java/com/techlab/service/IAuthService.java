@@ -17,7 +17,7 @@ public interface IAuthService {
 
     User getCurrentUser();
 
-    void createPasswordResetToken(String email) throws MessagingException;
+    void createPasswordResetToken(String email);
 
     void changePassword(String oldPassword, String newPassword, String token);
 
