@@ -12,4 +12,6 @@ public interface IOrderService {
     List<OrderResponse> getCurrentUserOrders();
 
     OrderResponse updateOrderStatus(Long orderId, String status);
+
+    OrderResponse checkout(Long cartId);
 }

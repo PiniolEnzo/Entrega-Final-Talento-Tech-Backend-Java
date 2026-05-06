@@ -1,5 +1,6 @@
 package com.techlab.entity;
 
+import com.techlab.exception.CartEmptyException;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -91,6 +92,10 @@ public class Order {
         // para no crear ordenes vacias, a causa de un carrito sin item,
         // se usa una excepción cartEmptyException para lanzarla al recibir
         // el carrito sin items
+        if (cart.isEmpty()) {
+            throw new CartEmptyException();
+        }
+
         cart.getItems().forEach(item ->{
             OrderLine orderLine = new OrderLine(order, item.getProduct(), item.getQuantity());
             order.lines.add(orderLine);

@@ -207,11 +207,17 @@ public class DataLoader implements CommandLineRunner {
         cart1.setUser(user1);
         cart1 = cartRepository.save(cart1);
 
+        // Add items to Juan's cart before creating the order
+        cart1.addItem(product1);  // Laptop Gaming Pro
+        cart1.addItem(product3);  // Auriculares Sony WH-1000XM5
+        cart1.addItem(product12); // Clean Code - Robert C. Martin
+        cartRepository.save(cart1);
+
         ShoppingCart cart2 = new ShoppingCart();
         cart2.setUser(user2);
         cart2 = cartRepository.save(cart2);
 
-        log.info("Created shopping carts for users");
+        log.info("Created shopping carts for users (juan's cart has 3 items)");
 
         // ==================== ORDERS (optional) ====================
         // Create a completed order for user1
