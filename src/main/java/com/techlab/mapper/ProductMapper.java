@@ -18,6 +18,7 @@ public class ProductMapper {
         response.setName(product.getName());
         response.setDescription(product.getDescription());
         response.setPrice(product.getPrice());
+        response.setStock(product.getStock());
         response.setImageUrl(product.getImageUrl());
         response.setCategoryId(product.getCategory().getId());
         response.setCategoryName(product.getCategory().getName());
