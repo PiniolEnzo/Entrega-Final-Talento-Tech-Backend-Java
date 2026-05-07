@@ -15,6 +15,8 @@ public class ProductResponse {
     private String description;
     @Schema(description = "Product price", example = "999.99")
     private Float price;
+    @Schema(description = "Product stock quantity", example = "50")
+    private Integer stock;
     @Schema(description = "Product image URL", example = "http://example.com/image.jpg")
     private String imageUrl;
     @Schema(description = "Product category ID", example = "2")
