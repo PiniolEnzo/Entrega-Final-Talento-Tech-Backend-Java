@@ -40,7 +40,7 @@ public class DataLoader implements CommandLineRunner {
         User admin = User.builder()
                 .name("Admin")
                 .email("admin@techlab.com")
-                .password(passwordEncoder.encode("admin123"))
+                .password(passwordEncoder.encode("Admin1234-"))
                 .active(true)
                 .userRole(Role.ADMIN)
                 .build();
@@ -49,7 +49,7 @@ public class DataLoader implements CommandLineRunner {
         User user1 = User.builder()
                 .name("Juan Pérez")
                 .email("juan@example.com")
-                .password(passwordEncoder.encode("user1234"))
+                .password(passwordEncoder.encode("User1234."))
                 .active(true)
                 .userRole(Role.USER)
                 .build();
@@ -58,7 +58,7 @@ public class DataLoader implements CommandLineRunner {
         User user2 = User.builder()
                 .name("María García")
                 .email("maria@example.com")
-                .password(passwordEncoder.encode("user1234"))
+                .password(passwordEncoder.encode("User12345-"))
                 .active(true)
                 .userRole(Role.USER)
                 .build();
@@ -83,58 +83,73 @@ public class DataLoader implements CommandLineRunner {
         // ==================== PRODUCTS ====================
         // Electrónica
         Product product1 = Product.builder()
-                .name("Laptop Gaming Pro")
-                .description("Laptop de alta gama para gaming con RTX 4080, 32GB RAM, 1TB SSD")
-                .price(2499999f)
+                .name("Notebook ASUS ROG Strix SCAR 18\" Intel Core Ultra 9 275HX 32GB 2TB RTX 5080")
+                .description("Notebook ASUS ROG Strix SCAR 18 con Intel " +
+                        "Core Ultra 9 275HX, 32GB RAM DDR5 y almacenamiento " +
+                        "SSD NVMe de 2TB. Equipada con GPU NVIDIA GeForce RTX 5080" +
+                        " de 16GB. Pantalla de 18 pulgadas 2.5K (2560x1600) con 240Hz, " +
+                        "ideal para gaming competitivo. Conectividad avanzada con WiFi BE, " +
+                        "Bluetooth y 2 puertos Thunderbolt 5, además de Ethernet. " +
+                        "Incluye 3 USB 3.2 tipo A y HDMI. Diseño negro con teclado RGB, webcam " +
+                        "y teclado numérico. Windows 11 Home preinstalado.")
+                .price(8108400f)
                 .category(electronica)
-                .stock(15)
-                .imageUrl("https://http2.mlstatic.com/D_NQ_NP_XXXXX-1.webp")
+                .stock(150)
+                .imageUrl("https://imagenes.compragamer.com/productos/compragamer_Imganen_general_49443_Notebook_ASUS_ROG_Strix_SCAR_18_18__Intel_Core_Ultra_9_275HX_32GB_DDR5_SSD_2TB_RTX_5080_2.5K_240Hz_Win11_G835LW-SA024W_ffb8ba36-grn.jpg")
                 .build();
 
         Product product2 = Product.builder()
-                .name("Smartphone Galaxy S24 Ultra")
+                .name("Smartphone Samsung Galaxy S24 Ultra")
                 .description("Samsung Galaxy S24 Ultra con 256GB, cámara 200MP, pantalla AMOLED")
-                .price(1899999f)
+                .price(2155990f)
                 .category(electronica)
                 .stock(25)
-                .imageUrl("https://http2.mlstatic.com/D_NQ_NP_XXXXX-2.webp")
+                .imageUrl("https://http2.mlstatic.com/D_NQ_NP_963419-MLA77739568521_072024-O.webp")
                 .build();
 
         Product product3 = Product.builder()
                 .name("Auriculares Sony WH-1000XM5")
                 .description("Auriculares wireless con cancelación de ruido premium")
-                .price(449999f)
+                .price(690525f)
                 .category(electronica)
                 .stock(30)
-                .imageUrl("https://http2.mlstatic.com/D_NQ_NP_XXXXX-3.webp")
+                .imageUrl("https://http2.mlstatic.com/D_NQ_NP_719976-MLA99500633372_112025-O.webp")
                 .build();
 
         Product product4 = Product.builder()
                 .name("Smartwatch Apple Watch Series 9")
                 .description("Apple Watch con GPS, pantalla Always-On, sensor de salud")
-                .price(749999f)
+                .price(840000f)
                 .category(electronica)
                 .stock(20)
-                .imageUrl("https://http2.mlstatic.com/D_NQ_NP_XXXXX-4.webp")
+                .imageUrl("https://http2.mlstatic.com/D_Q_NP_782085-MLA80127450634_112024-F.webp")
                 .build();
 
         // Ropa
         Product product5 = Product.builder()
-                .name("Campera Adidas Invincible")
-                .description("Campera deportiva impermeable, ideal para running y entrenamiento")
-                .price(189999f)
+                .name("Campera Adidas Casual ZNE")
+                .description("Campera adidas ZNE modelo DVJ18 para mujer, ideal para uso lifestyle en " +
+                        "temporada Primavera/Verano 2026. Diseño en color blanco con estilo deportivo y moderno. " +
+                        "Confeccionada con materiales reciclados, combinando comodidad y compromiso sustentable. " +
+                        "Cuenta con 2 bolsillos externos para mayor practicidad. No es impermeable ni oversize, y no " +
+                        "incluye capucha. Prenda liviana y versátil para uso diario y urbano.")
+                .price(159999f)
                 .category(ropa)
                 .stock(50)
-                .imageUrl("https://http2.mlstatic.com/D_NQ_NP_XXXXX-5.webp")
+                .imageUrl("https://http2.mlstatic.com/D_Q_NP_767648-MLA100267310613_122025-F.webp")
                 .build();
 
         Product product6 = Product.builder()
-                .name("Zapatillas Nike Air Max")
-                .description("Zapatillas urbanas con tecnología Air Max, comodidad garantizada")
-                .price(249999f)
+                .name("Zapatillas Hombre Nike Air Max Excee Moda Negro Fn7304-001")
+                .description("Zapatillas Nike Air Max Excee FN7304-001 para hombre, estilo urbano. Inspiradas en el " +
+                        "Air Max 90, con diseño moderno y líneas alargadas. Incorporan unidad Max Air visible para " +
+                        "amortiguación duradera y entresuela de espuma suave. Cuello acolchado para mayor confort y " +
+                        "suela de goma que brinda tracción y resistencia. Ideales para uso diario con estilo " +
+                        "y comodidad.")
+                .price(229999f)
                 .category(ropa)
                 .stock(40)
-                .imageUrl("https://http2.mlstatic.com/D_NQ_NP_XXXXX-6.webp")
+                .imageUrl("https://http2.mlstatic.com/D_Q_NP_935782-MLA81561875170_012025-F.webp")
                 .build();
 
         // Hogar
@@ -144,16 +159,16 @@ public class DataLoader implements CommandLineRunner {
                 .price(1299999f)
                 .category(hogar)
                 .stock(12)
-                .imageUrl("https://http2.mlstatic.com/D_NQ_NP_XXXXX-7.webp")
+                .imageUrl("https://http2.mlstatic.com/D_Q_NP_903403-MLA107458481843_022026-F.webp")
                 .build();
 
         Product product8 = Product.builder()
                 .name("Juego de Sábanas 400 TC")
                 .description("Juego de sábanas premium algodon egipcio, 400 hilos")
-                .price(89999f)
+                .price(103230f)
                 .category(hogar)
                 .stock(35)
-                .imageUrl("https://http2.mlstatic.com/D_NQ_NP_XXXXX-8.webp")
+                .imageUrl("https://http2.mlstatic.com/D_Q_NP_868292-MLA107590107202_032026-F.webp")
                 .build();
 
         // Deportes
@@ -163,16 +178,17 @@ public class DataLoader implements CommandLineRunner {
                 .price(1599999f)
                 .category(deportes)
                 .stock(8)
-                .imageUrl("https://http2.mlstatic.com/D_NQ_NP_XXXXX-9.webp")
+                .imageUrl("https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcSfsgQTYYm2tvP6IL7W7hZ3mc-" +
+                        "lcvDLpgwRDTzFMuLNY2KK9xy6WXCpAcUyGXCfiylr3D7t66gSBfDGjMsyBzWHqSxJJ1meTg")
                 .build();
 
         Product product10 = Product.builder()
-                .name("Set de Pesas Rusas 5-20kg")
-                .description("Set de 6 pesas俄罗斯as para entrenamiento en casa")
+                .name("Set de Pesas Rusas 21kg")
+                .description("Set de 6 pesas rusas para entrenamiento en casa")
                 .price(179999f)
                 .category(deportes)
                 .stock(22)
-                .imageUrl("https://http2.mlstatic.com/D_NQ_NP_XXXXX-10.webp")
+                .imageUrl("https://http2.mlstatic.com/D_Q_NP_2X_698002-MLA89101613736_082025-P.webp")
                 .build();
 
         // Libros
@@ -182,7 +198,8 @@ public class DataLoader implements CommandLineRunner {
                 .price(24999f)
                 .category(libros)
                 .stock(100)
-                .imageUrl("https://http2.mlstatic.com/D_NQ_NP_XXXXX-11.webp")
+                .imageUrl("https://tienda.planetadelibros.com.ar/cdn/shop/products/portada_el-principito_antoine-de-" +
+                        "saint-exupery_201507152131.jpg?v=1684356025")
                 .build();
 
         Product product12 = Product.builder()
@@ -191,7 +208,8 @@ public class DataLoader implements CommandLineRunner {
                 .price(89999f)
                 .category(libros)
                 .stock(45)
-                .imageUrl("https://http2.mlstatic.com/D_NQ_NP_XXXXX-12.webp")
+                .imageUrl("https://images.cdn1.buscalibre.com/fit-in/360x360/87/da/87da3d378f0336fd04014c4ea153d064" +
+                        ".jpg")
                 .build();
 
         productRepository.saveAll(List.of(

@@ -21,7 +21,7 @@ public class ProductRequest {
     private String name;
 
     @NotNull
-    @Size(min = 10, max = 200, message = "Description must be between 10 and 200 characters.")
+    @Size(min = 10, max = 600, message = "Description must be between 10 and 200 characters.")
     @Schema(description = "Product description", example = "A high-performance laptop", requiredMode = Schema.RequiredMode.REQUIRED)
     private String description;
 
