@@ -95,7 +95,9 @@ public class DataLoader implements CommandLineRunner {
                 .price(8108400f)
                 .category(electronica)
                 .stock(150)
-                .imageUrl("https://imagenes.compragamer.com/productos/compragamer_Imganen_general_49443_Notebook_ASUS_ROG_Strix_SCAR_18_18__Intel_Core_Ultra_9_275HX_32GB_DDR5_SSD_2TB_RTX_5080_2.5K_240Hz_Win11_G835LW-SA024W_ffb8ba36-grn.jpg")
+                .imageUrl("https://imagenes.compragamer.com/productos/compragamer_Imganen_general_49443_Notebook_" +
+                        "ASUS_ROG_Strix_SCAR_18_18__Intel_Core_Ultra_9_275HX_32GB_DDR5_SSD_2TB_RTX_5080_2.5K_240Hz_" +
+                        "Win11_G835LW-SA024W_ffb8ba36-grn.jpg")
                 .build();
 
         Product product2 = Product.builder()

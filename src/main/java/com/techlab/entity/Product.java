@@ -37,7 +37,7 @@ public class Product {
     @Schema(description = "Name of the product.", example = "Motorola moto Edge 50 Pro")
     private String name;
 
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "TEXT")
     @Schema(description = "Detailed description of the product.", example = "Smartphone with 512GB storage and 12GB RAM with a 200MP camera and 165Hz refresh rate display with 6.7 inches, 1440 x 3120 pixels resolution, powered by Snapdragon 7 Gen 3 Octa Core 2.63GHz processor and a battery capacity of 4500mAh.")
     private String description;
 
@@ -54,7 +54,7 @@ public class Product {
     @Schema(description = "Available stock quantity of the product.", example = "100")
     private Integer stock;
 
-    @Column(name = "image_url")
+    @Column(name = "image_url", columnDefinition = "TEXT")
     @Schema(description = "URL of the product's image.", example = "https://http2.mlstatic.com/D_NQ_NP_993519-MLA80895362030_122024-O.webp")
     private String imageUrl;
 
