@@ -19,7 +19,9 @@ public interface IAuthService {
 
     void createPasswordResetToken(String email);
 
-    void changePassword(String oldPassword, String newPassword, String token);
+    void changePassword(Long userId, String oldPassword, String newPassword);
+
+    void resetPassword(String token, String newPassword);
 
     PasswordChangeToken validatePasswordResetToken(String token);
 

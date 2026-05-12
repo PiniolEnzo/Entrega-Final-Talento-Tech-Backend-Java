@@ -16,9 +16,8 @@ import com.techlab.service.IAuthService;
 import com.techlab.service.IEmailService;
 import com.techlab.service.IJwtService;
 import com.techlab.service.ILogoutService;
-import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
@@ -28,13 +27,19 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.HexFormat;
+import java.util.List;
 import java.util.UUID;
 
 import static com.techlab.utils.UserAccessValidate.validateUserAccess;
 
 
+@Slf4j
 @Service("authService")
 @RequiredArgsConstructor
 public class AuthServiceImpl implements IAuthService {
@@ -50,14 +55,13 @@ public class AuthServiceImpl implements IAuthService {
 
     @Override
     public AuthResponse login(LoginRequest request) {
-        // Authenticate using email
         authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
-        // Find user by email
+
         User user = userRepository.findByEmail(request.getEmail())
             .orElseThrow(UserNotFoundException::new);
-        
+
         String token = jwtService.getToken(user);
         return AuthResponse.builder()
                 .token(token)
@@ -66,16 +70,14 @@ public class AuthServiceImpl implements IAuthService {
 
     @Override
     public UserDto register(RegisterRequest request) {
-        // Check if email already exists
         if (userRepository.existsByEmail(request.getEmail())){
             throw new DuplicateUserException("Email already registered");
         }
-        
-        // Check if name already exists
+
         if (userRepository.existsByName(request.getName())){
             throw new DuplicateUserException("Username already exists");
         }
-        
+
         User user = UserMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
@@ -93,7 +95,6 @@ public class AuthServiceImpl implements IAuthService {
 
         String token = authHeader.substring(7);
 
-        // Get token expiration time
         Long userId = jwtService.extractUserId(token);
         if (userId == null) {
             throw new BadCredentialsException("Invalid token");
@@ -101,10 +102,7 @@ public class AuthServiceImpl implements IAuthService {
 
         validateUserAccess(userId);
 
-        // Get expiration from token
         Long expiration = jwtService.getUserIdFromToken(token);
-        // Note: We need to get the actual expiration time from the token
-        // Let's use a method to get expiration
         Date expirationDate = jwtService.getTokenExpiration(token);
         if (expirationDate != null) {
             logoutService.invalidateToken(token, expirationDate.getTime());
@@ -129,7 +127,7 @@ public class AuthServiceImpl implements IAuthService {
     @Override
     public User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication==null || authentication.getPrincipal()==null){
+        if (authentication == null || authentication.getPrincipal() == null){
             return null;
         }
 
@@ -140,55 +138,93 @@ public class AuthServiceImpl implements IAuthService {
 
     @Override
     public void createPasswordResetToken(String email) {
-        User user = userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
+        try {
+            User user = userRepository.findByEmail(email)
+                    .orElseThrow(UserNotFoundException::new);
 
-        validateUserAccess(user.getId());
+            // 1. Invalidar tokens anteriores del mismo usuario
+            List<PasswordChangeToken> tokensAnteriores =
+                    passwordResetTokenRepository.findByUserAndUsedFalse(user);
+            tokensAnteriores.forEach(t -> t.setUsed(true));
+            passwordResetTokenRepository.saveAll(tokensAnteriores);
 
-        String token = UUID.randomUUID().toString();
+            // 2. Generar token UUID y hashearlo (SHA-256)
+            String rawToken = UUID.randomUUID().toString();
+            String hashedToken = hashToken(rawToken);
 
-        passwordResetTokenRepository.save(PasswordChangeToken.builder()
-                .token(token)
-                .user(user)
-                .expirationDate(LocalDateTime.now().plusMinutes(10))
-                .used(false)
-                .build()
-        );
+            // 3. Mandar el email PRIMERO (con el token original)
+            emailService.sendPasswordResetEmail(email, user.getName(), rawToken);
 
-        emailService.sendPasswordResetEmail(email, token);
+            // 4. Si el email se mandó bien, recién persistimos el token hasheado
+            passwordResetTokenRepository.save(PasswordChangeToken.builder()
+                    .token(hashedToken)
+                    .user(user)
+                    .expirationDate(LocalDateTime.now().plusMinutes(10))
+                    .used(false)
+                    .build()
+            );
+
+        } catch (UserNotFoundException e) {
+            // No revelar si el email existe o no — siempre responder 200
+            log.warn("Solicitud de reset para email inexistente: {}", email);
+        }
     }
 
     @Override
-    public PasswordChangeToken validatePasswordResetToken(String token) {
-        PasswordChangeToken resetToken = passwordResetTokenRepository.findByToken(token)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid token")); //token not found
+    public PasswordChangeToken validatePasswordResetToken(String rawToken) {
+        String hashedToken = hashToken(rawToken);
+
+        PasswordChangeToken resetToken = passwordResetTokenRepository.findByToken(hashedToken)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid token"));
 
         if (resetToken.isUsed() || resetToken.getExpirationDate().isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Token is expired or already used"); //token expired or already used
+            throw new IllegalArgumentException("Token is expired or already used");
         }
-
-        validateUserAccess(resetToken.getUser().getId());
 
         return resetToken;
     }
 
     @Override
-    public void changePassword(String oldPassword, String newPassword, String token) {
-        PasswordChangeToken resetToken = validatePasswordResetToken(token);
-
-        User user = resetToken.getUser();
-
-        validateUserAccess(user.getId());
+    public void changePassword(Long userId, String oldPassword, String newPassword) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
 
         if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
-            throw new IllegalArgumentException("Old password is incorrect"); //old password does not match (Bad Credentials)
+            throw new IllegalArgumentException("Old password is incorrect");
         }
 
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
 
+    @Override
+    public void resetPassword(String rawToken, String newPassword) {
+        PasswordChangeToken resetToken = validatePasswordResetToken(rawToken);
+
+        User user = resetToken.getUser();
 
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
 
         passwordResetTokenRepository.delete(resetToken);
+    }
+
+    // ========================================================================
+    // Utils
+    // ========================================================================
+
+    /**
+     * Hashea un token con SHA-256 para no guardarlo en texto plano en la BD.
+     * El hash es determinístico, lo que permite buscar por token en la BD.
+     */
+    private String hashToken(String rawToken) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(rawToken.getBytes(StandardCharsets.UTF_8));
+            return HexFormat.of().formatHex(hash);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("SHA-256 not available", e);
+        }
     }
 
 

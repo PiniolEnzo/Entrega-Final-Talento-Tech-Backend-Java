@@ -33,8 +33,9 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/auth/logout").hasAnyRole(Role.ADMIN.name(), Role.USER.name())
-                                .requestMatchers(HttpMethod.POST, "/auth/forgot-password").hasAnyRole(Role.ADMIN.name(), Role.USER.name())
-                                .requestMatchers(HttpMethod.POST, "/auth/validate").hasAnyRole(Role.ADMIN.name(), Role.USER.name())
+                                .requestMatchers(HttpMethod.POST, "/auth/forgot-password").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/auth/validate").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/auth/reset-password").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/auth/change-password").hasAnyRole(Role.ADMIN.name(), Role.USER.name())
                                 .requestMatchers(HttpMethod.GET, "/auth/me").hasAnyRole(Role.ADMIN.name(), Role.USER.name())
 
@@ -59,7 +60,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/orders").hasRole(Role.ADMIN.name())
                                 .requestMatchers(HttpMethod.GET, "/orders/*").hasRole(Role.ADMIN.name())
                                 .requestMatchers(HttpMethod.PUT, "/orders/*/status").hasRole(Role.ADMIN.name())
-                                .requestMatchers(HttpMethod.POST, "/orders/checkout/{cartId}").hasRole(Role.USER.name())
+                                .requestMatchers(HttpMethod.POST, "/orders/checkout/*").hasRole(Role.USER.name())
 
                                 // ============ PRODUCTS ============
                                 .requestMatchers(HttpMethod.GET, "/products").permitAll()

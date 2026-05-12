@@ -11,6 +11,8 @@ public interface IShoppingCartService {
 
     CartResponse createCart();
 
+    CartResponse getCurrentUserCart();
+
     CartItemResponse addToCart(Long cartId, Long productId);
 
     CartItemResponse updateItem(Long cartId, Long productId, Integer quantity);

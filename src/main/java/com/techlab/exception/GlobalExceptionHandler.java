@@ -86,10 +86,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Product not found."));
     }
 
+    @ExceptionHandler(InsufficientStockException.class)
+    public ResponseEntity<Map<String, String>> handleInsufficientStock(InsufficientStockException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", "Insufficient stock of " + ex.getMessage()));
+    }
+
     // Excepción sobre categorias
     @ExceptionHandler(CategoryNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleCategoryNotFound() {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Product not found."));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Category not found."));
     }
 
     @ExceptionHandler(DuplicateCategory.class)

@@ -61,5 +61,6 @@ public class UserServiceImpl implements IUserService {
     public void logicalDelete(Long id){
         User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
         user.setActive(false);
+        userRepository.save(user);
     }
 }

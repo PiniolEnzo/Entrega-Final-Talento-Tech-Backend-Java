@@ -19,9 +19,6 @@ public interface IShoppingCartRepository extends JpaRepository<ShoppingCart, Lon
 
     @EntityGraph(attributePaths = "items.product")
     @Query("SELECT sc FROM ShoppingCart sc WHERE sc.user = :user")
-    List<ShoppingCart> findByUser(@Param("user") User user);
-
-    @Query("SELECT sc FROM ShoppingCart sc WHERE sc.user = :user")
     Optional<ShoppingCart> findFirstByUser(@Param("user") User user);
 }
 

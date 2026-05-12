@@ -40,7 +40,7 @@ public class DataLoader implements CommandLineRunner {
         User admin = User.builder()
                 .name("Admin")
                 .email("admin@techlab.com")
-                .password(passwordEncoder.encode("Admin1234-"))
+                .password(passwordEncoder.encode("Admin12345-"))
                 .active(true)
                 .userRole(Role.ADMIN)
                 .build();
@@ -49,7 +49,7 @@ public class DataLoader implements CommandLineRunner {
         User user1 = User.builder()
                 .name("Juan Pérez")
                 .email("juan@example.com")
-                .password(passwordEncoder.encode("User12345."))
+                .password(passwordEncoder.encode("User12345-"))
                 .active(true)
                 .userRole(Role.USER)
                 .build();
@@ -245,7 +245,11 @@ public class DataLoader implements CommandLineRunner {
         order1.setPaymentStatus(PaymentStatus.PAID);
         orderRepository.save(order1);
 
-        log.info("Created sample order for user1");
+        // Clear Juan's cart after creating the example order
+        cart1.clearItems();
+        cartRepository.save(cart1);
+
+        log.info("Created sample order for user1 (cart cleared)");
 
         log.info("=================================================");
         log.info("           DATA LOADER COMPLETED                ");
@@ -255,15 +259,15 @@ public class DataLoader implements CommandLineRunner {
         log.info("  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  ");
         log.info("  👑 ADMIN:                                      ");
         log.info("     email: admin@techlab.com                   ");
-        log.info("     password: admin123                          ");
+        log.info("     password: Admin12345-                          ");
         log.info("                                                 ");
         log.info("  👤 USER 1:                                     ");
         log.info("     email: juan@example.com                   ");
-        log.info("     password: user1234                          ");
+        log.info("     password: User12345-                          ");
         log.info("                                                 ");
         log.info("  👤 USER 2:                                     ");
         log.info("     email: maria@example.com                  ");
-        log.info("     password: user1234                          ");
+        log.info("     password: User12345-                          ");
         log.info("                                                 ");
         log.info("  📦 12 productos cargados en 5 categorías       ");
         log.info("  🛒 Carritos creados para usuarios              ");

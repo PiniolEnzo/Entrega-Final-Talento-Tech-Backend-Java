@@ -4,10 +4,12 @@ package com.techlab.controller;
 import com.techlab.dto.auth.AuthResponse;
 import com.techlab.dto.auth.ForgotPasswordRequest;
 import com.techlab.dto.auth.LoginRequest;
+import com.techlab.dto.auth.ResetPasswordRequest;
 import com.techlab.dto.user.ChangePassword;
 import com.techlab.dto.user.RegisterRequest;
 import com.techlab.dto.user.UserDto;
 import com.techlab.dto.user.UserProfileResponse;
+import com.techlab.entity.User;
 import com.techlab.service.IAuthService;
 import com.techlab.service.IJwtService;
 import com.techlab.service.ILogoutService;
@@ -33,8 +35,6 @@ import java.util.Map;
 public class AuthController {
 
     private final IAuthService authService;
-    private final ILogoutService logoutService;
-    private final IJwtService jwtService;
 
     @Operation(
             summary = "User Login",
@@ -164,21 +164,41 @@ public class AuthController {
     }
 
     @Operation(
-            summary = "Change Password",
-            description = "Change the user's password using the old password and a valid reset token",
+            summary = "Change Password (authenticated)",
+            description = "Change the user's password. Requires the user to be logged in and provide their current password.",
             parameters = {
-                    @Parameter(name = "request", description = "Change password request payload containing old password, new password, and reset token", required = true)
+                    @Parameter(name = "request", description = "Change password request payload containing old and new password", required = true)
             }
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Password changed successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid request - incorrect old password or invalid/expired token"),
+            @ApiResponse(responseCode = "400", description = "Invalid request - incorrect old password"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - no valid JWT token"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PostMapping("/change-password")
     public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePassword request) {
-        authService.changePassword(request.getOldPassword(), request.getNewPassword(), request.getToken());
+        User currentUser = authService.getCurrentUser();
+        authService.changePassword(currentUser.getId(), request.getOldPassword(), request.getNewPassword());
         return ResponseEntity.ok().body(Map.of("message", "Password changed successfully"));
+    }
+
+    @Operation(
+            summary = "Reset Password (via token)",
+            description = "Reset a forgotten password using the token received by email. Does NOT require authentication.",
+            parameters = {
+                    @Parameter(name = "request", description = "Reset password request payload containing the reset token and new password", required = true)
+            }
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Password reset successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request - invalid or expired token"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        authService.resetPassword(request.getToken(), request.getNewPassword());
+        return ResponseEntity.ok().body(Map.of("message", "Password reset successfully"));
     }
 
 

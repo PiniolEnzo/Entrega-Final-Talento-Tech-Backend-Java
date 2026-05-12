@@ -52,6 +52,20 @@ public class CartController {
     }
 
     @Operation(
+            summary = "Get current user cart",
+            description = "Retrieve the current authenticated user's cart. If the user doesn't have a cart yet, one is created automatically."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Cart retrieved successfully",
+                    content = @Content(schema = @Schema(implementation = CartResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
+    @GetMapping("/mine")
+    public CartResponse getMyCart() {
+        return cartService.getCurrentUserCart();
+    }
+
+    @Operation(
             summary = "Add item to cart",
             description = "Add a product to an existing shopping cart",
             parameters = {

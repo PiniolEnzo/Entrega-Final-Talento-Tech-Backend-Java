@@ -7,12 +7,13 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 /**
- * DTO for changing user password.
- * Contains the old password and the new password.
+ * DTO for changing user password when already authenticated.
+ * Contains the old password and the new password only.
+ * For the forgot-password flow, use {@link com.techlab.dto.auth.ResetPasswordRequest}.
  */
 
 @Data
-@Schema(description = "Data required to change a user's password")
+@Schema(description = "Data required for an authenticated user to change their password")
 public class ChangePassword {
     @NotBlank(message = "Old password is required.")
     @Size(min = 10, max = 25, message = "Password must be between 10 to 25 characters long.")
@@ -27,9 +28,4 @@ public class ChangePassword {
             message = "Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character.")
     @Schema(description = "New password", example = "NewP4ss456-", requiredMode = Schema.RequiredMode.REQUIRED, minLength = 10, maxLength = 25, format = "password")
     private String newPassword;
-
-    @NotBlank(message = "Token is required.")
-    @Schema(description = "Password reset token", example = "abc123def456ghi789", requiredMode = Schema.RequiredMode.REQUIRED)
-    private String token;
-
 }

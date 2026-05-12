@@ -35,10 +35,30 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
     @Override
     public CartResponse createCart() {
         User user = authService.getCurrentUser();
-        ShoppingCart cart = new ShoppingCart();
-        cart.setUser(user);
-        shoppingCartRepository.save(cart);
-        return ShoppingCartMapper.toCartResponse(cart);
+
+        // Si el usuario ya tiene carrito, devolver el existente (idempotente)
+        return shoppingCartRepository.findFirstByUser(user)
+                .map(ShoppingCartMapper::toCartResponse)
+                .orElseGet(() -> {
+                    ShoppingCart cart = new ShoppingCart();
+                    cart.setUser(user);
+                    shoppingCartRepository.save(cart);
+                    return ShoppingCartMapper.toCartResponse(cart);
+                });
+    }
+
+    @Override
+    public CartResponse getCurrentUserCart() {
+        User user = authService.getCurrentUser();
+
+        return shoppingCartRepository.findFirstByUser(user)
+                .map(ShoppingCartMapper::toCartResponse)
+                .orElseGet(() -> {
+                    ShoppingCart cart = new ShoppingCart();
+                    cart.setUser(user);
+                    shoppingCartRepository.save(cart);
+                    return ShoppingCartMapper.toCartResponse(cart);
+                });
     }
 
     @Override

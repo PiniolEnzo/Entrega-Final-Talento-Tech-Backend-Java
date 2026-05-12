@@ -18,12 +18,14 @@ import java.util.Set;
  * each representing a product and its quantity.
  * <p>
  * The cart is automatically timestamped when created and updated.
+ * <p>
+ * Each user has exactly one cart ({@code user_id} has a unique constraint).
  */
 
 @Getter @Setter
 @Entity
 @Schema(description = "Represents a user's shopping cart containing selected products.")
-@Table(name = "carts")
+@Table(name = "carts", uniqueConstraints = @UniqueConstraint(columnNames = "user_id", name = "uk_carts_user"))
 public class ShoppingCart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
