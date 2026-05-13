@@ -41,11 +41,10 @@ public class SecurityConfig {
 
                                 // ============ CARTS ============
                                 .requestMatchers(HttpMethod.POST, "/carts").hasRole(Role.USER.name())
-                                .requestMatchers(HttpMethod.POST, "/carts/*/items").hasRole(Role.USER.name())
+                                .requestMatchers(HttpMethod.POST, "/carts/*").hasRole(Role.USER.name())
                                 .requestMatchers(HttpMethod.GET, "/carts/*").hasRole(Role.USER.name())
-                                .requestMatchers(HttpMethod.PUT, "/carts/*/items/*").hasRole(Role.USER.name())
-                                .requestMatchers(HttpMethod.DELETE, "/carts/*/items/*").hasRole(Role.USER.name())
-                                .requestMatchers(HttpMethod.DELETE, "/carts/*/items").hasRole(Role.USER.name())
+                                .requestMatchers(HttpMethod.PUT, "/carts/*").hasRole(Role.USER.name())
+                                .requestMatchers(HttpMethod.DELETE, "/carts/*").hasRole(Role.USER.name())
 
                                 // ============ CATEGORIES ============
                                 .requestMatchers(HttpMethod.GET, "/categories").permitAll()
