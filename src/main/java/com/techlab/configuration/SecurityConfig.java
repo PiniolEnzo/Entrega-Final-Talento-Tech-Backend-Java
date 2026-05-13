@@ -40,12 +40,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/auth/me").hasAnyRole(Role.ADMIN.name(), Role.USER.name())
 
                                 // ============ CARTS ============
-                                .requestMatchers(HttpMethod.POST, "/carts").hasRole(Role.USER.name())
-                                .requestMatchers(HttpMethod.POST, "/carts/*/items").hasRole(Role.USER.name())
-                                .requestMatchers(HttpMethod.GET, "/carts/*").hasRole(Role.USER.name())
-                                .requestMatchers(HttpMethod.PUT, "/carts/*/items/*").hasRole(Role.USER.name())
-                                .requestMatchers(HttpMethod.DELETE, "/carts/*/items/*").hasRole(Role.USER.name())
-                                .requestMatchers(HttpMethod.DELETE, "/carts/*/items").hasRole(Role.USER.name())
+                                .requestMatchers("/carts/**").hasRole(Role.USER.name())
 
                                 // ============ CATEGORIES ============
                                 .requestMatchers(HttpMethod.GET, "/categories").permitAll()
@@ -57,10 +52,9 @@ public class SecurityConfig {
 
                                 // ============ ORDERS ============
                                 .requestMatchers(HttpMethod.GET, "/orders/my-orders").hasRole(Role.USER.name())
-                                .requestMatchers(HttpMethod.GET, "/orders").hasRole(Role.ADMIN.name())
-                                .requestMatchers(HttpMethod.GET, "/orders/*").hasRole(Role.ADMIN.name())
-                                .requestMatchers(HttpMethod.PUT, "/orders/*/status").hasRole(Role.ADMIN.name())
-                                .requestMatchers(HttpMethod.POST, "/orders/checkout/*").hasRole(Role.USER.name())
+                                .requestMatchers(HttpMethod.POST, "/orders/**").hasRole(Role.USER.name())
+                                .requestMatchers("/orders/**").hasRole(Role.ADMIN.name())
+
 
                                 // ============ PRODUCTS ============
                                 .requestMatchers(HttpMethod.GET, "/products").permitAll()
