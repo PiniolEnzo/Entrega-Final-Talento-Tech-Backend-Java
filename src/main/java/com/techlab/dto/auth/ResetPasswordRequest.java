@@ -16,8 +16,8 @@ public class ResetPasswordRequest {
 
     @NotBlank(message = "New password is required.")
     @Size(min = 10, max = 25, message = "Password must be between 10 to 25 characters long.")
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{10,}$",
-            message = "Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character.")
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&._-])[A-Za-z\\d@$!%*?&._-]{10,25}$",
+            message = "Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character (.@$!%*?&._-)")
     @Schema(description = "New password", example = "NewP4ss456-", requiredMode = Schema.RequiredMode.REQUIRED, minLength = 10, maxLength = 25, format = "password")
     private String newPassword;
 }
