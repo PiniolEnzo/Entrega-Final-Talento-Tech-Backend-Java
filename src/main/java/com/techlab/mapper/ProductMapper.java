@@ -38,7 +38,6 @@ public class ProductMapper {
         product.setName(request.getName());
         product.setDescription(request.getDescription());
         product.setPrice(request.getPrice());
-
         product.setStock(request.getStock());
         product.setImageUrl(request.getImageUrl());
         return product;
