@@ -83,18 +83,21 @@ public class Order {
      * @return A new Order instance populated with details from the shopping cart.
      */
     public static Order orderFromShoppingCart(User customer, ShoppingCart cart){
-        Order order = new Order();
-
-        order.setCustomer(customer);
-        order.setPaymentStatus(PaymentStatus.PENDING);
-        order.setTotal(cart.getTotalPrice());
-
         // para no crear ordenes vacias, a causa de un carrito sin item,
         // se usa una excepción cartEmptyException para lanzarla al recibir
         // el carrito sin items
         if (cart.isEmpty()) {
             throw new CartEmptyException();
         }
+        if (!cart.belongsTo(customer)) {
+            throw new IllegalArgumentException("Cart does not belong to the specified customer");
+        }
+
+        Order order = new Order();
+
+        order.setCustomer(customer);
+        order.setPaymentStatus(PaymentStatus.PENDING);
+        order.setTotal(cart.getTotalPrice());
 
         cart.getItems().forEach(item ->{
             OrderLine orderLine = new OrderLine(order, item.getProduct(), item.getQuantity());

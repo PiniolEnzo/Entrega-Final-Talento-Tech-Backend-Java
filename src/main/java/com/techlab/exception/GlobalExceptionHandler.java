@@ -119,4 +119,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to send email. Please try again later."));
     }
 
+    @ExceptionHandler(InvalidPaymentStatusException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidPaymentStatus(InvalidPaymentStatusException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", ex.getMessage() != null ? ex.getMessage() : "Invalid payment status provided."));
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, String>> handleIllegalArgument(IllegalArgumentException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", ex.getMessage() != null ? ex.getMessage() : "Invalid argument provided."));
+    }
+
 }

@@ -14,6 +14,7 @@ import com.techlab.repository.IShoppingCartRepository;
 import com.techlab.service.IAuthService;
 import com.techlab.service.IProductService;
 import com.techlab.service.IShoppingCartService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -28,10 +29,12 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
 
     @Override
     public CartResponse getCart(Long cartId) {
-        validateOwnership(getShoppingCart(cartId));
-        return ShoppingCartMapper.toCartResponse(shoppingCartRepository.getCartWithItems(cartId).orElseThrow(CartNotFoundException::new));
+        ShoppingCart cart = getShoppingCart(cartId);
+        validateOwnership(cart);
+        return ShoppingCartMapper.toCartResponse(cart);
     }
 
+    @Transactional
     @Override
     public CartResponse createCart() {
         User user = authService.getCurrentUser();
@@ -47,6 +50,7 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
                 });
     }
 
+    @Transactional
     @Override
     public CartResponse getCurrentUserCart() {
         User user = authService.getCurrentUser();
@@ -61,9 +65,11 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
                 });
     }
 
+    @Transactional
     @Override
     public CartItemResponse addToCart(Long cartId, Long productId) {
         ShoppingCart cart = getShoppingCart(cartId);
+
         validateOwnership(cart);
 
         Product product = productService.get(productId);
@@ -75,6 +81,7 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
         return CartItemMapper.toCartItemResponse(cartItem);
     }
 
+    @Transactional
     @Override
     public CartItemResponse updateItem(Long cartId, Long productId, Integer quantity) {
         ShoppingCart cart = getShoppingCart(cartId);
@@ -94,6 +101,7 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
         return CartItemMapper.toCartItemResponse(cartItem);
     }
 
+    @Transactional
     @Override
     public void removeItem(Long cartId, Long productId) {
         ShoppingCart cart = getShoppingCart(cartId);
@@ -103,6 +111,7 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
         shoppingCartRepository.save(cart);
     }
 
+    @Transactional
     @Override
     public void clearCart(Long cartId) {
         ShoppingCart cart = getShoppingCart(cartId);
@@ -112,13 +121,13 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
         shoppingCartRepository.save(cart);
     }
 
-    public ShoppingCart getShoppingCart(Long cartId){
+    private ShoppingCart getShoppingCart(Long cartId){
         return shoppingCartRepository.getCartWithItems(cartId).orElseThrow(CartNotFoundException::new);
     }
 
-    public void validateOwnership(ShoppingCart cart){
+    private void validateOwnership(ShoppingCart cart){
         User currentUser = authService.getCurrentUser();
-        if (currentUser.getId()==null){
+        if (currentUser==null){
             throw new AccessDeniedException("Authentication required");
         }
         if (!cart.belongsTo(currentUser)){

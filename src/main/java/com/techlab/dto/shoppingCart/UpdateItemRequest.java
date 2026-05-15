@@ -15,7 +15,7 @@ import lombok.Data;
 @Schema(description = "Request to update the quantity of an item in the shopping cart")
 public class UpdateItemRequest {
     @NotNull(message = "Quantity must be provided.")
-    @Min(value = 0, message = "Quantity must be greater than zero.")
+    @Min(value = 0, message = "Quantity must be greater than or equal to 0.")
     @Max(value = 1000000, message = "Quantity must be less than or equal to 1,000,000.")
     @Schema(description = "Quantity of the item", example = "10", requiredMode = Schema.RequiredMode.REQUIRED, minimum = "0", maximum = "1000000")
     private Integer quantity;

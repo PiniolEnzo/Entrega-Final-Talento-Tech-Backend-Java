@@ -6,10 +6,7 @@ import com.techlab.entity.PaymentStatus;
 import com.techlab.entity.Product;
 import com.techlab.entity.ShoppingCart;
 import com.techlab.entity.User;
-import com.techlab.exception.CartEmptyException;
-import com.techlab.exception.CartNotFoundException;
-import com.techlab.exception.InsufficientStockException;
-import com.techlab.exception.OrderNotFoundException;
+import com.techlab.exception.*;
 import com.techlab.mapper.OrderMapper;
 import com.techlab.repository.IOrderRepository;
 import com.techlab.repository.IProductRepository;
@@ -51,10 +48,22 @@ public class OrderServiceImpl implements IOrderService {
 
     @Override
     public OrderResponse updateOrderStatus(Long orderId, String status) {
+        if(!isValidStatus(status)) {
+            throw new InvalidPaymentStatusException("Estado de pago inválido: " + status);
+        }
         Order order = orderRepository.findById(orderId).orElseThrow(OrderNotFoundException::new);
         order.setPaymentStatus(PaymentStatus.fromString(status.toUpperCase()));
         orderRepository.save(order);
         return OrderMapper.toOrderResponse(order);
+    }
+
+    private boolean isValidStatus(String status) {
+        try {
+            PaymentStatus.fromString(status.toUpperCase());
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
 
     @Override

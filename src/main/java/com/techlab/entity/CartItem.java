@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
  */
 @Getter @Setter
 @Entity
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Table(name = "cart_items")
 @Schema(description = "Represents an item added to the shopping cart, including product and quantity.")
 public class CartItem {
@@ -21,6 +22,7 @@ public class CartItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     @Schema(description = "Unique identifier of the cart item.", example = "1")
+    @EqualsAndHashCode.Include
     private Long id;
 
     @ManyToOne

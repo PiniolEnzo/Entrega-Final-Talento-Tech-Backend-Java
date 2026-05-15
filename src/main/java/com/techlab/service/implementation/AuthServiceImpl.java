@@ -190,7 +190,7 @@ public class AuthServiceImpl implements IAuthService {
                 .orElseThrow(UserNotFoundException::new);
 
         if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
-            throw new IllegalArgumentException("Old password is incorrect");
+            throw new BadCredentialsException("Old password is incorrect");
         }
 
         user.setPassword(passwordEncoder.encode(newPassword));
