@@ -54,6 +54,9 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
     @Override
     public CartResponse getCurrentUserCart() {
         User user = authService.getCurrentUser();
+        if (user == null){
+            throw new AccessDeniedException("Authentication required");
+        }
 
         return shoppingCartRepository.findFirstByUser(user)
                 .map(ShoppingCartMapper::toCartResponse)
