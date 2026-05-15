@@ -12,4 +12,6 @@ public class ProductDto {
     private String name;
     @Schema(description = "Product price", example = "999.99")
     private Float price;
+    @Schema(description = "Product image URL", example = "https://example.com/images/laptop.jpg")
+    private String imageUrl;
 }

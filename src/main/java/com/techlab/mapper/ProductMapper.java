@@ -50,6 +50,7 @@ public class ProductMapper {
         dto.setId(product.getId());
         dto.setName(product.getName());
         dto.setPrice(product.getPrice());
+        dto.setImageUrl(product.getImageUrl());
         return dto;
     }
 
