@@ -118,6 +118,7 @@ public class AuthServiceImpl implements IAuthService {
                 .orElseThrow(UserNotFoundException::new);
 
         return UserProfileResponse.builder()
+                .id(user.getId())
                 .name(user.getName())
                 .email(user.getEmail())
                 .build();
