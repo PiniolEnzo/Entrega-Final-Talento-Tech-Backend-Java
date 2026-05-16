@@ -1,5 +1,6 @@
 package com.techlab.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -38,6 +39,7 @@ public class Category {
 
     @OneToMany(fetch=FetchType.LAZY, mappedBy="category")
     @Schema(description = "Set of products associated with this category.")
+    @JsonIgnore
     private Set<Product> products = new HashSet<>();
 
     @Column(name = "name")
