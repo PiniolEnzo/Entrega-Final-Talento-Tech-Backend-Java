@@ -68,6 +68,9 @@ public class User implements UserDetails {
     @Schema(description = "Role assigned to the user", example = "ADMIN")
     private Role userRole;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, orphanRemoval = true)
+    private ShoppingCart cart;
+
 /**
      * Constructs a new User with the specified name, email, password, and active status.
      *

@@ -33,12 +33,12 @@ public class ShoppingCart {
     @Schema(description = "Unique identifier for the shopping cart.", example = "1")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @Schema(description = "User who owns this cart.")
     private User user;
 
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.MERGE, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Schema(description = "Set of items currently in the shopping cart.")
     private Set<CartItem> items = new LinkedHashSet<>();
 
