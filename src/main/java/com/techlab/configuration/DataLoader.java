@@ -70,154 +70,38 @@ public class DataLoader implements CommandLineRunner {
                 user2.getId(), user2.getEmail());
 
         // ==================== CATEGORIES ====================
-        Category electronica = categoryRepository.save(new Category("Electrónica"));
-        Category ropa = categoryRepository.save(new Category("Ropa"));
-        Category hogar = categoryRepository.save(new Category("Hogar"));
-        Category deportes = categoryRepository.save(new Category("Deportes"));
-        Category libros = categoryRepository.save(new Category("Libros"));
+        Category catLibros = categoryRepository.save(new Category("Libros"));
+        Category catVaritas = categoryRepository.save(new Category("Varitas"));
+        Category catAccesorios = categoryRepository.save(new Category("Accesorios"));
+        Category catJuegos = categoryRepository.save(new Category("Juegos"));
+        Category catImpresiones = categoryRepository.save(new Category("Impresiones 3D"));
+        Category catJuguetes = categoryRepository.save(new Category("Juguetes"));
 
-        log.info("Created categories: {}, {}, {}, {}, {}", 
-                electronica.getName(), ropa.getName(), hogar.getName(), 
-                deportes.getName(), libros.getName());
+        log.info("Created categories: {}, {}, {}, {}, {}, {}",
+                catLibros.getName(), catVaritas.getName(), catAccesorios.getName(), catJuegos.getName(), catImpresiones.getName(), catJuguetes.getName());
 
         // ==================== PRODUCTS ====================
-        // Electrónica
-        Product product1 = Product.builder()
-                .name("Notebook ASUS ROG Strix SCAR 18\" Intel Core Ultra 9 275HX 32GB 2TB RTX 5080")
-                .description("Notebook ASUS ROG Strix SCAR 18 con Intel " +
-                        "Core Ultra 9 275HX, 32GB RAM DDR5 y almacenamiento " +
-                        "SSD NVMe de 2TB. Equipada con GPU NVIDIA GeForce RTX 5080" +
-                        " de 16GB. Pantalla de 18 pulgadas 2.5K (2560x1600) con 240Hz, " +
-                        "ideal para gaming competitivo. Conectividad avanzada con WiFi BE, " +
-                        "Bluetooth y 2 puertos Thunderbolt 5, además de Ethernet. " +
-                        "Incluye 3 USB 3.2 tipo A y HDMI. Diseño negro con teclado RGB, webcam " +
-                        "y teclado numérico. Windows 11 Home preinstalado.")
-                .price(8108400f)
-                .category(electronica)
-                .stock(150)
-                .imageUrl("https://imagenes.compragamer.com/productos/compragamer_Imganen_general_49443_Notebook_" +
-                        "ASUS_ROG_Strix_SCAR_18_18__Intel_Core_Ultra_9_275HX_32GB_DDR5_SSD_2TB_RTX_5080_2.5K_240Hz_" +
-                        "Win11_G835LW-SA024W_ffb8ba36-grn.jpg")
-                .build();
-
-        Product product2 = Product.builder()
-                .name("Smartphone Samsung Galaxy S24 Ultra")
-                .description("Samsung Galaxy S24 Ultra con 256GB, cámara 200MP, pantalla AMOLED")
-                .price(2155990f)
-                .category(electronica)
-                .stock(25)
-                .imageUrl("https://http2.mlstatic.com/D_NQ_NP_963419-MLA77739568521_072024-O.webp")
-                .build();
-
-        Product product3 = Product.builder()
-                .name("Auriculares Sony WH-1000XM5")
-                .description("Auriculares wireless con cancelación de ruido premium")
-                .price(690525f)
-                .category(electronica)
-                .stock(30)
-                .imageUrl("https://http2.mlstatic.com/D_NQ_NP_719976-MLA99500633372_112025-O.webp")
-                .build();
-
-        Product product4 = Product.builder()
-                .name("Smartwatch Apple Watch Series 9")
-                .description("Apple Watch con GPS, pantalla Always-On, sensor de salud")
-                .price(840000f)
-                .category(electronica)
-                .stock(20)
-                .imageUrl("https://http2.mlstatic.com/D_Q_NP_782085-MLA80127450634_112024-F.webp")
-                .build();
-
-        // Ropa
-        Product product5 = Product.builder()
-                .name("Campera Adidas Casual ZNE")
-                .description("Campera adidas ZNE modelo DVJ18 para mujer, ideal para uso lifestyle en " +
-                        "temporada Primavera/Verano 2026. Diseño en color blanco con estilo deportivo y moderno. " +
-                        "Confeccionada con materiales reciclados, combinando comodidad y compromiso sustentable. " +
-                        "Cuenta con 2 bolsillos externos para mayor practicidad. No es impermeable ni oversize, y no " +
-                        "incluye capucha. Prenda liviana y versátil para uso diario y urbano.")
-                .price(159999f)
-                .category(ropa)
-                .stock(50)
-                .imageUrl("https://http2.mlstatic.com/D_Q_NP_767648-MLA100267310613_122025-F.webp")
-                .build();
-
-        Product product6 = Product.builder()
-                .name("Zapatillas Hombre Nike Air Max Excee Moda Negro Fn7304-001")
-                .description("Zapatillas Nike Air Max Excee FN7304-001 para hombre, estilo urbano. Inspiradas en el " +
-                        "Air Max 90, con diseño moderno y líneas alargadas. Incorporan unidad Max Air visible para " +
-                        "amortiguación duradera y entresuela de espuma suave. Cuello acolchado para mayor confort y " +
-                        "suela de goma que brinda tracción y resistencia. Ideales para uso diario con estilo " +
-                        "y comodidad.")
-                .price(229999f)
-                .category(ropa)
-                .stock(40)
-                .imageUrl("https://http2.mlstatic.com/D_Q_NP_935782-MLA81561875170_012025-F.webp")
-                .build();
-
-        // Hogar
-        Product product7 = Product.builder()
-                .name("Asppiradora Dyson V15")
-                .description("Aspiradora inalámbrica con detección de polvo, autonomía 60min")
-                .price(1299999f)
-                .category(hogar)
-                .stock(12)
-                .imageUrl("https://http2.mlstatic.com/D_Q_NP_903403-MLA107458481843_022026-F.webp")
-                .build();
-
-        Product product8 = Product.builder()
-                .name("Juego de Sábanas 400 TC")
-                .description("Juego de sábanas premium algodon egipcio, 400 hilos")
-                .price(103230f)
-                .category(hogar)
-                .stock(35)
-                .imageUrl("https://http2.mlstatic.com/D_Q_NP_868292-MLA107590107202_032026-F.webp")
-                .build();
-
-        // Deportes
-        Product product9 = Product.builder()
-                .name("Bicicleta Mountain Bike Specialized")
-                .description("Bicicleta MTB cuadro aluminio, suspensiones Fox, 27 velocidades")
-                .price(1599999f)
-                .category(deportes)
-                .stock(8)
-                .imageUrl("https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcSfsgQTYYm2tvP6IL7W7hZ3mc-" +
-                        "lcvDLpgwRDTzFMuLNY2KK9xy6WXCpAcUyGXCfiylr3D7t66gSBfDGjMsyBzWHqSxJJ1meTg")
-                .build();
-
-        Product product10 = Product.builder()
-                .name("Set de Pesas Rusas 21kg")
-                .description("Set de 6 pesas rusas para entrenamiento en casa")
-                .price(179999f)
-                .category(deportes)
-                .stock(22)
-                .imageUrl("https://http2.mlstatic.com/D_Q_NP_2X_698002-MLA89101613736_082025-P.webp")
-                .build();
-
-        // Libros
-        Product product11 = Product.builder()
-                .name("El Principito - Antoine de Saint-Exupéry")
-                .description("Clásico de la literatura francesa, edición hardcover")
-                .price(24999f)
-                .category(libros)
-                .stock(100)
-                .imageUrl("https://tienda.planetadelibros.com.ar/cdn/shop/products/portada_el-principito_antoine-de-" +
-                        "saint-exupery_201507152131.jpg?v=1684356025")
-                .build();
-
-        Product product12 = Product.builder()
-                .name("Clean Code - Robert C. Martin")
-                .description("Guía para escribir código limpio y mantenible")
-                .price(89999f)
-                .category(libros)
-                .stock(45)
-                .imageUrl("https://images.cdn1.buscalibre.com/fit-in/360x360/87/da/87da3d378f0336fd04014c4ea153d064" +
-                        ".jpg")
-                .build();
+        Product product1 = productRepository.save(Product.builder().name("Libro: Harry Potter y la Piedra Filosofal").description("La historia comienza aquí. Edición tapa dura con ilustraciones originales.").price(25.00).category(catLibros).stock(50).imageUrl("https://m.media-amazon.com/images/I/81mOclS-sKL.jpg").build());
+        Product product2 = productRepository.save(Product.builder().name("Varita de Harry Potter").description("Madera de acebo, núcleo de pluma de fénix. Réplica exacta de 34cm.").price(45.00).category(catVaritas).stock(20).imageUrl("https://m.media-amazon.com/images/I/61Z2C6K7SXL.jpg").build());
+        Product product3 = productRepository.save(Product.builder().name("Bufanda de Gryffindor").description("100% lana, colores rojo y dorado. Ideal para el invierno en Hogwarts.").price(30.00).category(catAccesorios).stock(30).imageUrl("https://m.media-amazon.com/images/I/61p58z6i9+L.jpg").build());
+        Product product4 = productRepository.save(Product.builder().name("Juego de Mesa: Monopoly Harry Potter").description("Edición especial con casillas mágicas y fichas temáticas.").price(55.00).category(catJuegos).stock(15).imageUrl("https://m.media-amazon.com/images/I/81XzR-9XGkL.jpg").build());
+        Product product5 = productRepository.save(Product.builder().name("Lámpara 3D: Las Reliquias de la Muerte").description("Impresión en PLA premium, luz LED cálida regulable.").price(35.00).category(catImpresiones).stock(10).imageUrl("https://m.media-amazon.com/images/I/61-sD-s6Y6L.jpg").build());
+        Product product6 = productRepository.save(Product.builder().name("LEGO Hogwarts Castle").description("Set coleccionista con detalles increíbles y mini-figuras exclusivas.").price(450.00).category(catJuegos).stock(5).imageUrl("https://m.media-amazon.com/images/I/81C-S-S6Y6L.jpg").build());
+        Product product7 = productRepository.save(Product.builder().name("Varita de Hermione Granger").description("Madera de vid, núcleo de fibra de corazón de dragón.").price(45.00).category(catVaritas).stock(15).imageUrl("https://m.media-amazon.com/images/I/61Y-S-S6Y6L.jpg").build());
+        Product product8 = productRepository.save(Product.builder().name("Set de Cartas: Duelo de Magos").description("Juego de estrategia para 2 jugadores, incluye manual de hechizos.").price(20.00).category(catJuegos).stock(40).imageUrl("https://m.media-amazon.com/images/I/61Z-S-S6Y6L.jpg").build());
+        Product product9 = productRepository.save(Product.builder().name("Sombrero Seleccionador (Miniatura)").description("Impresión 3D detallada y pintada a mano con acabado envejecido.").price(25.00).category(catImpresiones).stock(12).imageUrl("https://m.media-amazon.com/images/I/61A-S-S6Y6L.jpg").build());
+        Product product10 = productRepository.save(Product.builder().name("Libro: Harry Potter y la Cámara Secreta").description("Continuación de las aventuras en Hogwarts. Edición especial.").price(25.00).category(catLibros).stock(40).imageUrl("https://m.media-amazon.com/images/I/81X-S-S6Y6L.jpg").build());
+        Product product11 = productRepository.save(Product.builder().name("Anillo de la Familia Black").description("Joyería temática en plata con piedra negra y grabado antiguo.").price(60.00).category(catAccesorios).stock(8).imageUrl("https://m.media-amazon.com/images/I/61B-S-S6Y6L.jpg").build());
+        Product product12 = productRepository.save(Product.builder().name("Mapa del Merodeador (Réplica)").description("Papel pergamino envejecido con tinta mágica y pliegues reales.").price(35.00).category(catAccesorios).stock(25).imageUrl("https://m.media-amazon.com/images/I/61C-S-S6Y6L.jpg").build());
+        Product product13 = productRepository.save(Product.builder().name("Peluche de Hedwig").description("Búho nival ultra suave, tamaño mediano con detalles realistas.").price(28.00).category(catJuguetes).stock(18).imageUrl("https://m.media-amazon.com/images/I/61D-S-S6Y6L.jpg").build());
+        Product product14 = productRepository.save(Product.builder().name("Soporte 3D para Varitas").description("Diseño elegante en plástico negro mate para organizar tu colección.").price(15.00).category(catImpresiones).stock(20).imageUrl("https://m.media-amazon.com/images/I/61E-S-S6Y6L.jpg").build());
+        Product product15 = productRepository.save(Product.builder().name("Libro: Harry Potter y el Prisionero de Azkaban").description("La historia se vuelve más oscura. Edición tapa dura.").price(25.00).category(catLibros).stock(30).imageUrl("https://m.media-amazon.com/images/I/81Y-S-S6Y6L.jpg").build());
+        
 
         productRepository.saveAll(List.of(
                 product1, product2, product3, product4, product5,
                 product6, product7, product8, product9, product10,
-                product11, product12
+                product11, product12, product13, product14, product15
         ));
 
         log.info("Created 12 products across all categories");
@@ -228,18 +112,14 @@ public class DataLoader implements CommandLineRunner {
         cart1 = cartRepository.save(cart1);
 
         // Add items to Juan's cart before creating the order
-        cart1.addItem(product1);  // Laptop Gaming Pro
-        cart1.addItem(product3);  // Auriculares Sony WH-1000XM5
-        cart1.addItem(product12); // Clean Code - Robert C. Martin
+        cart1.addItem(product1);
+        cart1.addItem(product3);
+        cart1.addItem(product12);
         cartRepository.save(cart1);
-
-        ShoppingCart cart2 = new ShoppingCart();
-        cart2.setUser(user2);
-        cart2 = cartRepository.save(cart2);
 
         log.info("Created shopping carts for users (juan's cart has 3 items)");
 
-        // ==================== ORDERS (optional) ====================
+        // ==================== ORDERS ====================
         // Create a completed order for user1
         Order order1 = Order.orderFromShoppingCart(user1, cart1);
         order1.setPaymentStatus(PaymentStatus.PAID);
@@ -269,7 +149,7 @@ public class DataLoader implements CommandLineRunner {
         log.info("     email: maria@example.com                  ");
         log.info("     password: User12345-                          ");
         log.info("                                                 ");
-        log.info("  📦 12 productos cargados en 5 categorías       ");
+        log.info("  📦 15 productos cargados en 6 categorías       ");
         log.info("  🛒 Carritos creados para usuarios              ");
         log.info("  📋 Pedido de ejemplo para juan                ");
         log.info("                                                 ");
