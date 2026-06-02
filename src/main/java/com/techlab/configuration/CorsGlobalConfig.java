@@ -16,8 +16,8 @@ public class CorsGlobalConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         // Definir acá las urls permitidas para realizar peticiones
-        config.setAllowedOrigins(List.of("*"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+        config.setAllowedOrigins(List.of("https://frontend-dss.netlify.app"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(false);
 
