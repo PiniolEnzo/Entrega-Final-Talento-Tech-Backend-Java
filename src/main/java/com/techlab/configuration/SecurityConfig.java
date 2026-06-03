@@ -10,9 +10,11 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 
 @Configuration
 @EnableWebSecurity
@@ -27,6 +29,29 @@ public class SecurityConfig {
         return http
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
+                .headers(headers -> headers
+                        .contentSecurityPolicy(csp -> csp
+                                .policyDirectives("default-src 'self'; " +
+                                        "script-src 'self'; " +
+                                        "style-src 'self' https://fonts.googleapis.com; " +
+                                        "font-src https://fonts.gstatic.com; " +
+                                        "img-src 'self' https://placehold.co https://talento-tech-production.up.railway.app data:;" +
+                                        "connect-src 'self' https://talento-tech-production.up.railway.app; " +
+                                        "base-uri 'self'; " +
+                                        "form-action 'self'; "
+                                )
+                        )
+                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
+                        .referrerPolicy(rp -> rp.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN))
+                        .httpStrictTransportSecurity(hsts -> hsts
+                                .includeSubDomains(true)
+                                .maxAgeInSeconds(31536000)
+                        )
+                        .contentTypeOptions(Customizer.withDefaults())
+                        .permissionsPolicyHeader(pp -> pp
+                                .policy("geolocation=(), microphone=(), camera=()")
+                        )
+                )
                 .authorizeHttpRequests(authRequest ->
                         authRequest
                                 // ============ AUTH ============
